@@ -1,0 +1,22 @@
+{
+  "TenantId": "000000000000000000",
+  "Name": "Test Proporzwahl",
+  "Description": "Test Proporz",
+  "SubmissionDeadlineBegin": "2020-01-09T00:00:00Z",
+  "SubmissionDeadlineEnd": "2020-01-20T00:00:00Z",
+  "ContestDate": "2020-02-09T00:00:00Z",
+  "AvailableFrom": "2020-01-09T00:00:00Z",
+  "ElectionType": 0,
+  "QuorumSignaturesCount": null,
+  "State": 0,
+  "TenantLogo": "",
+  "Documents": [],
+  "DomainsOfInfluence": [],
+  "InfoTexts": [],
+  "IsArchived": false,
+  "CreationDate": "2020-01-08T13:12:10.2Z",
+  "CreatedBy": "default-user-id",
+  "ModifiedDate": null,
+  "ModifiedBy": null,
+  "Id": "e8d78202-fbd8-447f-a045-cf6a7402875b"
+}

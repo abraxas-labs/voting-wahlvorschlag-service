@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="SonarQube - voting / apps / voting-wahlvorschlag / service Abraxas v1.1 way" ToolsVersion="16.0">
+  <Include Path="..\..\.sonarlint\voting.apps.voting.wahlvorschlag.servicecsharp.ruleset" Action="Default" />
+  <Include Path="..\..\config\project.ruleset" Action="Default" />
+</RuleSet>

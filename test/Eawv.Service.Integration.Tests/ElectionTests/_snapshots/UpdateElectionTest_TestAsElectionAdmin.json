@@ -1,0 +1,16 @@
+{
+  "Name": "Updated election",
+  "Description": "Updated election description",
+  "SubmissionDeadlineBegin": "2020-01-12T00:00:00Z",
+  "SubmissionDeadlineEnd": "2020-01-25T00:00:00Z",
+  "ContestDate": "2020-01-30T00:00:00Z",
+  "AvailableFrom": "2020-01-11T00:00:00Z",
+  "ElectionType": 0,
+  "State": 0,
+  "IsArchived": false,
+  "CreationDate": "2020-01-08T13:12:10.2Z",
+  "CreatedBy": "default-user-id",
+  "ModifiedDate": "2020-01-10T13:12:10.2Z",
+  "ModifiedBy": "default-user-id",
+  "Id": "e8d78202-fbd8-447f-a045-cf6a7402875b"
+}

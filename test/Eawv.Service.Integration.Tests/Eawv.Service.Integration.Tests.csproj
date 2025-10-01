@@ -1,0 +1,7 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Eawv.Service\Eawv.Service.csproj" />
+  </ItemGroup>
+
+</Project>

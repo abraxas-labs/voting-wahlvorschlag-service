@@ -1,0 +1,22 @@
+{
+  "TenantId": "000000000000000000",
+  "Name": "Test Majorzwahl",
+  "Description": "Test Majorz",
+  "SubmissionDeadlineBegin": "2020-01-09T00:00:00Z",
+  "SubmissionDeadlineEnd": "2020-01-20T00:00:00Z",
+  "ContestDate": "2020-02-09T00:00:00Z",
+  "AvailableFrom": "2020-01-09T00:00:00Z",
+  "ElectionType": 1,
+  "QuorumSignaturesCount": null,
+  "State": 0,
+  "TenantLogo": "",
+  "Documents": [],
+  "DomainsOfInfluence": [],
+  "InfoTexts": [],
+  "IsArchived": false,
+  "CreationDate": "2020-01-09T13:12:10.2Z",
+  "CreatedBy": "default-user-id",
+  "ModifiedDate": null,
+  "ModifiedBy": null,
+  "Id": "f1df3d77-1be3-44f1-9e2f-ad20ff72624a"
+}

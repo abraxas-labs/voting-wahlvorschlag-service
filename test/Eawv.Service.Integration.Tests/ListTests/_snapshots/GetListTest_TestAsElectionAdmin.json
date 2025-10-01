@@ -1,0 +1,27 @@
+{
+  "ResponsiblePartyTenantId": "fdp-st-gallen",
+  "Indenture": null,
+  "SubmitDate": null,
+  "Name": "Max Muster",
+  "Description": "Max Muster (FDP)",
+  "SortOrder": 0,
+  "State": 0,
+  "Representative": "fdp-user",
+  "DeputyUsers": [
+    "default-user-id"
+  ],
+  "MemberUsers": [],
+  "Validated": false,
+  "Locked": false,
+  "Version": 0,
+  "Candidates": [],
+  "ListUnion": null,
+  "ListSubUnion": null,
+  "CreatedByName": null,
+  "ModifiedByName": null,
+  "CreationDate": "2020-01-10T13:12:10.2Z",
+  "CreatedBy": "default-user-id",
+  "ModifiedDate": null,
+  "ModifiedBy": null,
+  "Id": "b69a9757-95b1-4bdd-97c0-79de214ba1a5"
+}

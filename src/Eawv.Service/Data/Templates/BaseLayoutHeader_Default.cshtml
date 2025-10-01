@@ -1,0 +1,34 @@
+@using Eawv.Service.Models.TemplateServiceModels
+@{
+    Layout = "BaseLayout_Default";
+}
+<header class="row space">
+    <h1 class="preserve-whitespace">@ViewBag.Model.Election.Name</h1>
+    @{
+        var tenantTitle = ViewBag.Model.GetInfoText("tenantTitle");
+        var hasTenantLogo = string.IsNullOrEmpty(tenantTitle) && ViewBag.Model.Election.TenantLogo != null;
+        var logoHeight = "55px";
+    }
+    
+    @if (!hasTenantLogo)
+    {
+        <h1>@tenantTitle</h1>
+    }
+    
+    @section HeaderStyles {
+        @if (hasTenantLogo)
+        {
+           <text>
+           .doc {
+               background-image: url('@ViewBag.Model.ElectionTenantLogoDataURI');
+               background-repeat: no-repeat;
+               background-position: top right;
+               background-size: auto @logoHeight;
+            }
+           </text>
+        }
+    }
+    
+    @RenderSection("Header", false)
+</header>
+@RenderBody()

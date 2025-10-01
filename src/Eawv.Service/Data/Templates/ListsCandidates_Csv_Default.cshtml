@@ -1,0 +1,52 @@
+@using Eawv.Service.DataAccess.Entities
+@using RazorLight
+@using System.Linq
+@using System.Collections.Generic;
+@using System;
+@inherits TemplatePage<Eawv.Service.Models.TemplateServiceModels.TemplateBag>
+@(Model.IsProporz ? "Listennummer;" : "")Kandidatennummer;Amtliche Namen;Amtliche Vornamen;Politische Namen;Politische Vornamen;Geschlecht;Geburtsdatum;Adresse;Wplz;Amtlicher Wohnort;Politischer Wohnort;Heimatort(e) inkl. Kantonszugehörigkeit;Titel;Beruf(e);Politischer Beruf;@(Model.IsMajorz || Model.Settings.ShowPartyOnProporzElection ? "Partei;" : "")Bisher@(Model.IsProporz ? ";Vorkumuliert" : "")
+@{
+    const char CsvSeparator = ';';
+    const char CsvSeparatorReplacement = ',';
+    foreach (List list in Model.Election.Lists)
+    {
+        foreach (Candidate candidate in Model.GetClonedAndOrderedCandidates(list))
+        {
+            var sex = ((int)candidate.Sex) - 1;
+            var fields = new List<string>
+            {
+                candidate.Index.ToString("D2"),
+                candidate.FamilyName,
+                candidate.FirstName,
+                candidate.BallotFamilyName,
+                candidate.BallotFirstName,
+                sex.ToString(),
+                candidate.DateOfBirth.ToString("dd.MM.yyyy"),
+                candidate.Street + ' ' + candidate.HouseNumber,
+                candidate.ZipCode,
+                candidate.Locality,
+                candidate.BallotLocality,
+                candidate.Origin,
+                candidate.Title,
+                candidate.OccupationalTitle,
+                candidate.BallotOccupationalTitle,
+                candidate.Incumbent ? "Ja" : "Nein"
+            };
+
+            if (Model.IsMajorz || Model.Settings.ShowPartyOnProporzElection)
+            {
+                fields.Insert(fields.Count - 1, candidate.Party); // insert before "Incumbent"
+            }
+
+            if (Model.IsProporz)
+            {
+                fields.Insert(0, list.Indenture);
+                fields.Add(candidate.Cloned ? "Ja" : "Nein");
+            }
+
+            fields = fields.Select(f => f?.Replace(CsvSeparator, CsvSeparatorReplacement) ?? "").ToList();
+            fields.Add(Environment.NewLine);
+            @Raw(string.Join(CsvSeparator, fields))
+        }
+    }
+}

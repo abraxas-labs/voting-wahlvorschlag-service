@@ -1,0 +1,71 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.34928.147
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eawv.Service", "src\Eawv.Service\Eawv.Service.csproj", "{6F610968-C242-41AE-860F-F3258947F872}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{5F3F77B5-9283-44CF-822B-E8F0EE39241F}"
+	ProjectSection(SolutionItems) = preProject
+		.dockerignore = .dockerignore
+		.editorconfig = .editorconfig
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		.gitlab-ci.yml = .gitlab-ci.yml
+		.releaserc.json = .releaserc.json
+		config\CodeAnalysis.props = config\CodeAnalysis.props
+		CODE_OF_CONDUCT.md = CODE_OF_CONDUCT.md
+		config\Common.props = config\Common.props
+		Directory.Build.props = Directory.Build.props
+		docker-compose.yml = docker-compose.yml
+		Dockerfile = Dockerfile
+		dotnet-tools.json = dotnet-tools.json
+		global.json = global.json
+		LICENSE = LICENSE
+		config\project.ruleset = config\project.ruleset
+		README.md = README.md
+		config\stylecop.json = config\stylecop.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{5DCC185D-D55D-4076-AF0D-296F5D6944B3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{80FE4509-4206-4808-828B-367FBB667043}"
+	ProjectSection(SolutionItems) = preProject
+		test\Directory.Build.props = test\Directory.Build.props
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eawv.Service.Unit.Tests", "test\Eawv.Service.Unit.Tests\Eawv.Service.Unit.Tests.csproj", "{9A771BC6-5DC0-4A9B-903B-1B2C3F693EE2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eawv.Service.Integration.Tests", "test\Eawv.Service.Integration.Tests\Eawv.Service.Integration.Tests.csproj", "{9B6C8957-C19E-4A17-90F4-52A92378DF52}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6F610968-C242-41AE-860F-F3258947F872}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F610968-C242-41AE-860F-F3258947F872}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F610968-C242-41AE-860F-F3258947F872}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F610968-C242-41AE-860F-F3258947F872}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A771BC6-5DC0-4A9B-903B-1B2C3F693EE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A771BC6-5DC0-4A9B-903B-1B2C3F693EE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A771BC6-5DC0-4A9B-903B-1B2C3F693EE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A771BC6-5DC0-4A9B-903B-1B2C3F693EE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B6C8957-C19E-4A17-90F4-52A92378DF52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B6C8957-C19E-4A17-90F4-52A92378DF52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B6C8957-C19E-4A17-90F4-52A92378DF52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B6C8957-C19E-4A17-90F4-52A92378DF52}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6F610968-C242-41AE-860F-F3258947F872} = {5DCC185D-D55D-4076-AF0D-296F5D6944B3}
+		{9A771BC6-5DC0-4A9B-903B-1B2C3F693EE2} = {80FE4509-4206-4808-828B-367FBB667043}
+		{9B6C8957-C19E-4A17-90F4-52A92378DF52} = {80FE4509-4206-4808-828B-367FBB667043}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6F489230-0452-4129-A201-BBAE133611E7}
+	EndGlobalSection
+EndGlobal

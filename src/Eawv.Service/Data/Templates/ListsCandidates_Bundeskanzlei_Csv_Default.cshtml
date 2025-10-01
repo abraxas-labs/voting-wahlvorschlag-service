@@ -1,0 +1,39 @@
+@using Eawv.Service.DataAccess.Entities
+@using RazorLight
+@using System.Linq
+@using System.Collections.Generic;
+@using System;
+@inherits TemplatePage<Eawv.Service.Models.TemplateServiceModels.TemplateBag>
+Listennummer;Kandidatennummer;Amtliche Namen;Amtliche Vornamen;Politische Namen;Politische Vornamen;Geschlecht;Geburtsdatum;Adresse;Wplz;Wohnort;Politischer Wohnort;Heimatorte;Beruf
+@{
+    const char CsvSeparator = ';';
+    const char CsvSeparatorReplacement = ',';
+    foreach (List list in Model.Election.Lists)
+    {
+        foreach (Candidate candidate in list.Candidates.OrderBy(c => c.Index))
+        {
+            var sex = ((int)candidate.Sex) - 1;
+            var fields = new List<string>
+            {
+                list.Indenture,
+                candidate.Index.ToString("D2"),
+                candidate.FamilyName,
+                candidate.FirstName,
+                candidate.BallotFamilyName,
+                candidate.BallotFirstName,
+                sex.ToString(),
+                candidate.DateOfBirth.ToString("dd.MM.yyyy"),
+                candidate.Street + ' ' + candidate.HouseNumber,
+                candidate.ZipCode,
+                candidate.Locality,
+                candidate.BallotLocality,
+                candidate.Origin,
+                candidate.OccupationalTitle
+            };
+
+            fields = fields.Select(f => f?.Replace(CsvSeparator, CsvSeparatorReplacement) ?? "").ToList();
+            fields.Add(Environment.NewLine);
+            @Raw(string.Join(CsvSeparator, fields))
+        }
+    }
+}

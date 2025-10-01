@@ -1,0 +1,64 @@
+[
+  {
+    "type": "Layout",
+    "key": "BaseLayout",
+    "content": "BaseLayout_Default.cshtml"
+  },
+  {
+    "type": "Layout",
+    "key": "BaseLayoutHeader",
+    "content": "BaseLayoutHeader_Default.cshtml"
+  },
+  {
+    "type": "ListCandidates",
+    "content": "ListCandidates_Default.cshtml",
+    "filename": "{ELECTION_NAME} - Kandidaten.pdf",
+    "format": "A4",
+    "landscape": true
+  },
+  {
+    "type": "ListsCandidatesFederalChancellery",
+    "content": "ListsCandidates_Bundeskanzlei_Csv_Default.cshtml",
+    "filename": "{ELECTION_NAME} - Kandidaten (Bundeskanzlei).csv"
+  },
+  {
+    "type": "ListsCandidates",
+    "content": "ListsCandidates_Csv_Default.cshtml",
+    "filename": "{ELECTION_NAME} - Kandidaten.csv"
+  },
+  {
+    "type": "ListEmptyCandidates",
+    "content": "ListCandidates_Default.cshtml",
+    "filename": "{ELECTION_NAME} - Kandidaten (leer).pdf",
+    "format": "A4",
+    "landscape": true
+  },
+  {
+    "type": "Signatories",
+    "content": "Signatories_Default.cshtml",
+    "filename": "{ELECTION_NAME} - Unterzeichnende (leer).pdf",
+    "format": "A4",
+    "landscape": true
+  },
+  {
+    "type": "EmptyListUnions",
+    "content": "EmptyListUnions_Default.cshtml",
+    "filename": "{ELECTION_NAME} - Listenverbindungen (leer).pdf",
+    "format": "A4",
+    "landscape": true
+  },
+  {
+    "type": "EmailListStateChanged",
+    "content": "EMail_ListState_Changed_Default.cshtml",
+    "filename": "{ELECTION_NAME} - Statuswechsel Wahlvorschlag"
+  },
+  {
+    "type": "EmailListNewComment",
+    "content": "EMail_List_New_Comment_Default.cshtml",
+    "filename": "{ELECTION_NAME} - Eingang Kommentar"
+  },
+  {
+    "type": "ECH157",
+    "filename": "{ELECTION_NAME} - eCH-157.xml"
+  }
+]

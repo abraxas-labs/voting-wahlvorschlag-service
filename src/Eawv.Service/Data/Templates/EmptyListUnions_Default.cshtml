@@ -1,0 +1,55 @@
+@inherits RazorLight.TemplatePage<Eawv.Service.Models.TemplateServiceModels.TemplateBag>
+@{
+    ViewBag.Model = Model;
+    Layout = "BaseLayoutHeader_Default";
+}
+
+<main>
+    <div>
+        <div class="row">
+            <div>
+                <h2 class="inline" id="table-heading">Listenverbindung</h2>
+            </div>
+        </div>
+        <div class="row space">
+            <span>Die unterzeichnenden Vertreterinnen/Vertreter erklären hiermit die folgenden Listen unwiderruflich für miteinander verbunden:</span>
+            <span>Anzahl Sitze: @Model.ElectionNumberOfMandates</span>
+        </div>
+        <table class="fullwidth" aria-describedby="table-heading">
+            <thead>
+            <tr>
+                <th scope="col" rowspan="2" style="width: 1cm;">Liste<br/>Nr.</th>
+                <th scope="col" rowspan="2" style="width: 4cm;">Listenbezeichnung</th>
+                <th scope="col" rowspan="2" style="width: 1cm;">Stamm-<br/>liste</th>
+                <th scope="col" style="width: 4.5cm;" class="bot-no-border">Bemerkungen</th>
+                <th scope="col" colspan="2" class="bot-no-border">Vertreter/Vertreterin</th>
+                <th scope="col" style="width: 3cm;" rowspan="2">Ort</th>
+                <th scope="col" rowspan="2">Datum</th>
+            </tr>
+            <tr class="top-no-border">
+                <th scope="col" style="width: 4.5cm;">ggf. Unterlistenverbindung(en)</th>
+                <th scope="col">Name Vorname</th>
+                <th scope="col">Unterschrift</th>
+            </tr>
+            </thead>
+            <tbody>
+            @for (var i = 0; i < 10; i++)
+            {
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td class="center"><span class="checkbox-unchecked"></span></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        <div class="row">
+            <span class="preserve-whitespace">@Model.GetInfoText("formListunion")</span>
+        </div>
+    </div>
+</main>

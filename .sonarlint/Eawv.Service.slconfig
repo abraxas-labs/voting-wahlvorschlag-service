@@ -1,0 +1,12 @@
+{
+  "ServerUri": "https://sonarqube.abraxas-tools.ch/",
+  "Organization": null,
+  "ProjectKey": "voting.apps.voting.wahlvorschlag.service",
+  "ProjectName": "voting / apps / voting-wahlvorschlag / service",
+  "Profiles": {
+    "CSharp": {
+      "ProfileKey": "AXY-EKgxsgBN6ZS0V1cM",
+      "ProfileTimestamp": "2021-04-16T14:52:14Z"
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "list": {
+    "ResponsiblePartyTenantId": "fdp-st-gallen",
+    "Indenture": null,
+    "SubmitDate": null,
+    "Name": "List FDP",
+    "Description": "FDP",
+    "SortOrder": 0,
+    "State": 1,
+    "Representative": "fdp-user",
+    "DeputyUsers": [],
+    "MemberUsers": [],
+    "Validated": false,
+    "Locked": false,
+    "Version": 0,
+    "Candidates": [],
+    "ListUnion": null,
+    "ListSubUnion": null,
+    "CreatedByName": null,
+    "ModifiedByName": null,
+    "CreationDate": "2020-01-10T13:12:10.2Z",
+    "CreatedBy": "default-user-id",
+    "ModifiedDate": "2020-01-10T13:12:10.2Z",
+    "ModifiedBy": "default-user-id",
+    "Id": "573cfaef-363f-44b5-b116-c17d23c193eb"
+  },
+  "notification": {
+    "Recipients": null,
+    "Bcc": [
+      {
+        "EmailAddress": null,
+        "LoginId": "fdp-user"
+      }
+    ],
+    "Message": {
+      "Subject": {
+        "Raw": "Test Proporzwahl - Statuswechsel Wahlvorschlag"
+      },
+      "Content": {
+        "Raw": "<h2>Guten Tag</h2>\nDer Status des Wahlvorschlags List FDP wurde geändert.<br />\nFür weitere Informationen besuchen Sie bitte VOTING Wahlvorschlag: http://localhost:4221/sg/elections/e8d78202-fbd8-447f-a045-cf6a7402875b.<br />\n<br />\nDiese Nachricht wurde automatisch generiert.\n"
+      }
+    },
+    "Sender": null
+  }
+}

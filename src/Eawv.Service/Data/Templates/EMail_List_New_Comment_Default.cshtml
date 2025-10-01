@@ -1,0 +1,7 @@
+@using RazorLight
+@inherits TemplatePage<Eawv.Service.Models.TemplateServiceModels.TemplateBag>
+<h2>Guten Tag</h2>
+Dem Wahlvorschlag @Model.EncodeHtmlAndPossibleLinks(Model.List.Name), @Model.EncodeHtmlAndPossibleLinks(Model.List.Description) wurde ein neuer Kommentar hinterlegt.<br />
+Für weitere Informationen besuchen Sie bitte VOTING Wahlvorschlag: @(Model.Configuration.GUIUrl)@Model.Theme/elections/@Model.Election.Id/lists/@Model.List.Id.<br />
+<br />
+Diese Nachricht wurde automatisch generiert.
