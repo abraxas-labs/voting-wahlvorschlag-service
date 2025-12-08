@@ -54,7 +54,7 @@ public class GetElectionTest : BaseRestTest
     public async Task TestFutureElectionAsUserShouldNotWork()
     {
         await AssertStatus(
-            () => UserClient.GetAsync(Url + ElectionMockData.FutureElection.Id),
+            () => UserClient.GetAsync(Url + ElectionMockData.FutureUnavailableElection.Id),
             HttpStatusCode.NotFound);
     }
 

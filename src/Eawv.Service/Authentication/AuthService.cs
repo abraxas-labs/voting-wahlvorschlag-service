@@ -57,7 +57,7 @@ public class AuthService
             e.TenantId == tenantId
             && (IsWahlverwalter
                 || e.AvailableFrom == null
-                || e.AvailableFrom < _clock.UtcNow);
+                || e.AvailableFrom <= _clock.UtcNow);
     }
 
     public void AssertListWriteAccess(List list)

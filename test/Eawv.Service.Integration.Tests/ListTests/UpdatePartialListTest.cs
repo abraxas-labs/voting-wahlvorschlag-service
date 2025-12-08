@@ -75,6 +75,22 @@ public class UpdatePartialListTest : BaseRestTest
             HttpStatusCode.BadRequest);
     }
 
+    [Fact]
+    public async Task SubmitFutureElectionWithAvailabilityShouldThrow()
+    {
+        await AssertStatus(
+            () => UserClient.PatchAsJsonAsync(Url + ListMockData.ProporzFdpListFutureAvailableElection.Id + "?theme=sg", new PatchListModel { State = ListState.Submitted }),
+            HttpStatusCode.Forbidden);
+    }
+
+    [Fact]
+    public async Task SubmitPastElectionShouldThrow()
+    {
+        await AssertStatus(
+            () => UserClient.PatchAsJsonAsync(Url + ListMockData.ProporzFdpListPastElection.Id + "?theme=sg", new PatchListModel { State = ListState.Submitted }),
+            HttpStatusCode.Forbidden);
+    }
+
     protected override IEnumerable<string> AuthorizedRoles()
     {
         yield return Role.User;

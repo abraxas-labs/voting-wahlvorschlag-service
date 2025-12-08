@@ -78,6 +78,38 @@ public static class ListMockData
         Representative = UserMockData.GossauPartyUser.Id,
     };
 
+    public static List ProporzFdpListFutureAvailableElection => new()
+    {
+        Id = new Guid("7B53722F-5752-4383-A010-7469A894DEFE"),
+        CreationDate = MockedClock.UtcNowDate,
+        CreatedBy = UserMockData.FdpUser.Id,
+        ResponsiblePartyTenantId = TenantMockData.FdpStGallen.Id,
+        Name = "List SP",
+        Description = "SP",
+        SortOrder = 1,
+        State = ListState.Draft,
+        ElectionId = ElectionMockData.FutureAvailableElection.Id,
+        DeputyUsers = [],
+        MemberUsers = [],
+        Representative = UserMockData.FdpUser.Id,
+    };
+
+    public static List ProporzFdpListPastElection => new()
+    {
+        Id = new Guid("7F6D4476-2924-44DF-97B5-83014D7111F2"),
+        CreationDate = MockedClock.UtcNowDate,
+        CreatedBy = UserMockData.FdpUser.Id,
+        ResponsiblePartyTenantId = TenantMockData.FdpStGallen.Id,
+        Name = "List SP",
+        Description = "SP",
+        SortOrder = 1,
+        State = ListState.Draft,
+        ElectionId = ElectionMockData.PastElection.Id,
+        DeputyUsers = [],
+        MemberUsers = [],
+        Representative = UserMockData.FdpUser.Id,
+    };
+
     public static IEnumerable<List> All
     {
         get
@@ -86,6 +118,8 @@ public static class ListMockData
             yield return ProporzSpList;
             yield return MajorzFdpList;
             yield return GossauList;
+            yield return ProporzFdpListFutureAvailableElection;
+            yield return ProporzFdpListPastElection;
         }
     }
 

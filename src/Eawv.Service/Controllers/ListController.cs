@@ -80,6 +80,7 @@ public class ListController
 
         var list = _mapper.Map<List>(listModel);
         list.ElectionId = electionId;
+        list.Locked = false;
 
         if (_authService.IsWahlverwalter)
         {
@@ -97,6 +98,7 @@ public class ListController
         await _tenantService.AssertChildParent(list.ResponsiblePartyTenantId, election.TenantId);
         await EnsureValidList(election, list);
         await EnsureCorrectUsers(list);
+        EnsureCanSubmit(election);
 
         list.State = ListState.Draft;
 
@@ -127,7 +129,7 @@ public class ListController
         {
             list.Indenture = existing.Indenture;
             list.ResponsiblePartyTenantId = existing.ResponsiblePartyTenantId;
-            list.Locked = false;
+            list.Locked = existing.Locked;
             list.Validated = existing.Validated;
             list.SubmitDate = existing.SubmitDate;
         }
@@ -176,6 +178,12 @@ public class ListController
         if (!IsNewStateValid(existing.State, list.State))
         {
             throw new InvalidStateException(existing.State, list.State);
+        }
+
+        // Ensure list submissions can only apply within the submission deadline range
+        if (list.State == ListState.Submitted)
+        {
+            EnsureCanSubmit(election);
         }
 
         _authService.AssertListWriteAccess(existing);
@@ -300,6 +308,16 @@ public class ListController
         if (!newUserIds.IsSubsetOf(tenantUserIds))
         {
             throw new ForbiddenException("Not all provided users are from the list tenant.");
+        }
+    }
+
+    private void EnsureCanSubmit(Election election)
+    {
+        // Only allow submissions if the current date is within the submission deadline range.
+        if (DateOnly.FromDateTime(election.SubmissionDeadlineBegin) > _clock.Today ||
+            DateOnly.FromDateTime(election.SubmissionDeadlineEnd) < _clock.Today)
+        {
+            throw new ForbiddenException("Submission is only allowed between the submission deadline begin and end dates.");
         }
     }
 }

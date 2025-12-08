@@ -1,4 +1,4 @@
-# ✨ Changelog (`v2.12.10`)
+# ✨ Changelog (`v2.12.12`)
 
 All notable changes to this project will be documented in this file.
 
@@ -8,11 +8,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Version Info
 
 ```text
-This version -------- v2.12.10
+This version -------- v2.12.12
 Previous version ---- v2.12.10
 Initial version ----- v2.12.10
-Total commits ------- 1
+Total commits ------- 2
 ```
+
+## [v2.12.12] - 2025-12-05
+
+### 🔒 Security
+
+- prevent unauthorized manipulation of "Locked" attribute
+
+## [v2.12.11] - 2025-10-31
+
+### 🔄 Changed
+
+- apply election submission deadline policy for lists
 
 ## [v2.12.10] - 2025-10-01
 
