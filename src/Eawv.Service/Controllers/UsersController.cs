@@ -96,11 +96,12 @@ public class UsersController
 
     private void ScrubFields(UserModel user)
     {
-        if (_authService.IsWahlverwalter)
+        if (_authService.IsWahlverwalter || user.Loginid == _authService.GetUserId())
         {
             return;
         }
 
         user.Username = string.Empty;
+        user.Email = string.Empty;
     }
 }

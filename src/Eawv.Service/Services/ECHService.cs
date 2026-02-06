@@ -274,9 +274,10 @@ public class EchService
     {
         foreach (var list in bag.Election.Lists)
         {
+            var listDescription = GetListDescription(list);
             var listDescriptions = new List<ListDescriptionInfo>
             {
-                ListDescriptionInfo.Create(Languages.German, GetListDescription(list), UnknownValue),
+                ListDescriptionInfo.Create(Languages.German, listDescription, Truncate(listDescription, 20)),
             };
 
             var candidatePositions = new List<CandidatePositionInformation>();
@@ -328,4 +329,7 @@ public class EchService
         using var writer = new StreamWriter(stream);
         serializer.Serialize(writer, o);
     }
+
+    private static string Truncate(string s, int maxLength)
+        => s.Length > maxLength ? s[..maxLength] : s;
 }

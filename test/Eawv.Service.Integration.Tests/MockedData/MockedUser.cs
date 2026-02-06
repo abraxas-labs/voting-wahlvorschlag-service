@@ -11,6 +11,8 @@ public class MockedUser
 
     public string Name { get; set; }
 
+    public string Username { get; internal set; }
+
     public string Email { get; set; }
 
     public Dictionary<string, string> RoleByTenantId { get; set; }

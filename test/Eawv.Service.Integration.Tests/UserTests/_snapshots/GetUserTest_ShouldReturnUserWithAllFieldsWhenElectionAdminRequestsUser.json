@@ -1,0 +1,15 @@
+{
+  "Id": "fdp-user",
+  "Loginid": "fdp-user",
+  "Firstname": null,
+  "Lastname": null,
+  "Username": "fdpuser",
+  "Email": "fdp@user.invalid",
+  "Tenants": [
+    {
+      "Id": "fdp-st-gallen",
+      "TenantId": "fdp-st-gallen",
+      "Name": "FDP St. Gallen"
+    }
+  ]
+}

@@ -13,6 +13,7 @@ public static class UserMockData
     {
         Id = SecureConnectTestDefaults.MockedUserDefault.Loginid,
         Name = "Test-User",
+        Username = "testuser",
         Email = "test@user.invalid",
         RoleByTenantId = new Dictionary<string, string>
         {
@@ -26,6 +27,7 @@ public static class UserMockData
     {
         Id = "sg-wahlverwahlter",
         Name = "SG Wahlverwalter",
+        Username = "sgwahlverwalter",
         Email = "sg@wahlverwalter.invalid",
         RoleByTenantId = new Dictionary<string, string>
         {
@@ -37,6 +39,7 @@ public static class UserMockData
     {
         Id = "fdp-user",
         Name = "FDP user",
+        Username = "fdpuser",
         Email = "fdp@user.invalid",
         RoleByTenantId = new Dictionary<string, string>
         {
@@ -48,7 +51,7 @@ public static class UserMockData
     {
         Id = "sp-user",
         Name = "SP user",
-        Email = "sp@user.invalid",
+        Username = "spuser",
         RoleByTenantId = new Dictionary<string, string>
         {
             [TenantMockData.SpStGallen.Id] = Role.User,
@@ -59,6 +62,7 @@ public static class UserMockData
     {
         Id = "gossau-wahlverwahlter",
         Name = "Gossau Wahlverwalter",
+        Username = "gossauwahlverwalter",
         Email = "gossau@wahlverwalter.invalid",
         RoleByTenantId = new Dictionary<string, string>
         {
@@ -70,6 +74,7 @@ public static class UserMockData
     {
         Id = "gossau-user",
         Name = "Gossau Party User",
+        Username = "gossaupartyuser",
         Email = "gossau@party.invalid",
         RoleByTenantId = new Dictionary<string, string>
         {

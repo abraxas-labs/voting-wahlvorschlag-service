@@ -33,11 +33,15 @@ public class UserServiceMock : IUserService
             User = new IdentityClient.V1User
             {
                 Id = user.Id,
+                Firstname = user.Firstname,
+                Lastname = user.Lastname,
+                Username = user.Username,
                 Emails =
                 [
                     new IdentityClient.Apiv1Email
                     {
                         Primary = true,
+                        Verified = true,
                         Email = email,
                     },
                 ],
@@ -134,7 +138,7 @@ public class UserServiceMock : IUserService
             .Select(u => new PermissionClient.V1User
             {
                 Id = u.Id,
-                Emails =
+                Emails = string.IsNullOrEmpty(u.Email) ? [] :
                 [
                     new PermissionClient.Apiv1Email
                     {
@@ -156,7 +160,15 @@ public class UserServiceMock : IUserService
     public Task<TenantUser> UpdateUser(string loginId, List<string> tenantIds)
     {
         // No-op
-        return Task.FromResult(new TenantUser());
+        return Task.FromResult(new TenantUser
+        {
+            Tenants = tenantIds.ConvertAll(x => new PermissionClient.V1Tenant
+            {
+                Id = x,
+                Name = TenantMockData.All.FirstOrDefault(t => t.Id == x)?.Name ?? x,
+            }),
+            User = GetUser(loginId),
+        });
     }
 
     private IdentityClient.V1User GetUser(string id)
@@ -171,11 +183,13 @@ public class UserServiceMock : IUserService
         {
             Id = user.Id,
             Loginid = user.Id,
-            Emails =
+            Username = user.Username,
+            Emails = string.IsNullOrEmpty(user.Email) ? [] :
             [
                 new IdentityClient.Apiv1Email
                 {
                     Primary = true,
+                    Verified = true,
                     Email = user.Email,
                 },
             ],

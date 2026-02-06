@@ -1,6 +1,7 @@
 ﻿// (c) Copyright by Abraxas Informatik AG
 // For license information see LICENSE file
 
+using System.Linq;
 using AutoMapper;
 using Eawv.Service.DataAccess.Entities;
 using Eawv.Service.Models;
@@ -63,7 +64,19 @@ public class MappingProfile : Profile
             .ForMember(dst => dst.CreatorLastName, opts => opts.Ignore());
 
         CreateMap<CreateUserModel, IdentityClient.V1User>(MemberList.Source);
-        CreateMap<IdentityClient.V1User, UserModel>();
+        CreateMap<IdentityClient.V1User, UserModel>(MemberList.None)
+            .ForMember(dst => dst.Id, opts => opts.MapFrom(src => src.Id))
+            .ForMember(dst => dst.Firstname, opts => opts.MapFrom(src => src.Firstname))
+            .ForMember(dst => dst.Lastname, opts => opts.MapFrom(src => src.Lastname))
+            .ForMember(dst => dst.Username, opts => opts.MapFrom(src => src.Username))
+            .ForMember(dst => dst.Email, opts => opts.MapFrom(src =>
+                src.Emails == null
+                    ? null
+                    : (
+                        src.Emails.Any(e => e.Primary == true && e.Verified == true)
+                            ? src.Emails.FirstOrDefault(e => e.Primary == true && e.Verified == true).Email
+                            : src.Emails.FirstOrDefault(e => e.Verified == true).Email
+                      )));
         CreateMap<TenantUser, UserModel>().IncludeMembers(tu => tu.User);
 
         CreateMap<PermissionClient.V1User, IdentityClient.V1User>().ReverseMap();

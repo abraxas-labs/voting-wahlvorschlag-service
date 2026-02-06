@@ -71,9 +71,17 @@ public class EventNotificationService
             {
                 var user = await _userService.Get(users[i]);
                 var isDeleted = user.Lifecycle == ApiStorageLifecycle.DELETED;
-                var primaryEmail = user.Emails?.FirstOrDefault(e => e.Primary == true)?.Email;
+                var primaryEmailObj = user.Emails?.FirstOrDefault(e => e.Primary == true);
+                var primaryEmail = primaryEmailObj?.Email;
+                var isVerified = primaryEmailObj?.Verified ?? false;
+
                 if (isDeleted || string.IsNullOrEmpty(primaryEmail) || !emails.Add(primaryEmail))
                 {
+                    users.RemoveAt(i);
+                }
+                else if (!isVerified)
+                {
+                    _logger.LogWarning("User with id {id} has no verified primary e-mail.", users[i]);
                     users.RemoveAt(i);
                 }
             }

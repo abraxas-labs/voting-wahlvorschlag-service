@@ -4,4 +4,8 @@
     <ProjectReference Include="..\..\src\Eawv.Service\Eawv.Service.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="UserTests\_snapshots\" />
+  </ItemGroup>
+
 </Project>

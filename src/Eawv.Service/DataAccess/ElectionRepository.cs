@@ -49,20 +49,29 @@ public class ElectionRepository : GetOnWriteRepository<Election>
     public async Task<Election> GetEntireElection(Guid id)
     {
         var tenantId = await _tenantService.GetParentOrCurrentTenantId();
-        var entity = await Context.Elections.AsSplitQuery()
+        var query = Context.Elections.AsSplitQuery()
             .Include(e => e.DomainsOfInfluence)
                 .ThenInclude(doi => doi.DomainOfInfluence)
             .Include(e => e.Documents)
             .Include(e => e.InfoTexts)
             .Include(e => e.Lists.AsQueryable().Where(AuthService.ReadListPermissionsPredicate()))
                 .ThenInclude(l => l.Candidates.OrderBy(c => c.OrderIndex))
-            .Include(e => e.Lists)
-                .ThenInclude(l => l.ListUnion)
-            .Include(e => e.Lists)
-                .ThenInclude(l => l.ListSubUnion)
+            .AsQueryable();
+
+        if (AuthService.IsWahlverwalter)
+        {
+            query = query
+                .Include(e => e.Lists)
+                    .ThenInclude(l => l.ListUnion)
+                .Include(e => e.Lists)
+                    .ThenInclude(l => l.ListSubUnion);
+        }
+
+        var election = await query
             .Where(AuthService.ReadElectionPermissionsPredicate(tenantId))
             .SingleOrDefaultAsync(x => x.Id == id);
-        return entity ?? throw new EntityNotFoundException(id);
+
+        return election ?? throw new EntityNotFoundException(id);
     }
 
     public async Task<Election> GetSimpleElection(Guid id)

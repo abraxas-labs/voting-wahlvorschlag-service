@@ -50,6 +50,17 @@ public class UpdateAllCandidatesTest : BaseRestTest
     }
 
     [Fact]
+    public async Task ShouldReturnBadRequestWhenOrderIndexesOutOfRange()
+    {
+        await AssertStatus(
+            () => UserClient.PutAsJsonAsync(Url, NewValidRequest(c => c[0].Index = -1)), HttpStatusCode.BadRequest);
+        await AssertStatus(
+            () => UserClient.PutAsJsonAsync(Url, NewValidRequest(c => c[0].OrderIndex = 0)), HttpStatusCode.BadRequest);
+        await AssertStatus(
+            () => UserClient.PutAsJsonAsync(Url, NewValidRequest(c => c[0].CloneOrderIndex = 0)), HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
     public async Task TestDifferentTenantShouldNotWork()
     {
         await AssertStatus(
@@ -70,9 +81,9 @@ public class UpdateAllCandidatesTest : BaseRestTest
         return httpClient.PutAsJsonAsync(Url, NewValidRequest());
     }
 
-    private List<ModifyCandidateModel> NewValidRequest()
+    private List<ModifyCandidateModel> NewValidRequest(Action<List<ModifyCandidateModel>> customizer = null)
     {
-        return new List<ModifyCandidateModel>
+        var candidates = new List<ModifyCandidateModel>
         {
             new()
             {
@@ -110,5 +121,8 @@ public class UpdateAllCandidatesTest : BaseRestTest
                 Street = "Downtown",
             },
         };
+
+        customizer?.Invoke(candidates);
+        return candidates;
     }
 }

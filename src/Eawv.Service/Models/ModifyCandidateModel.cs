@@ -94,11 +94,14 @@ public class ModifyCandidateModel
     public bool Cloned { get; set; }
 
     [Required]
+    [Range(0, 100)]
     public int Index { get; set; }
 
     [Required]
+    [Range(1, 100)]
     public int OrderIndex { get; set; }
 
+    [Range(1, 100)]
     public int? CloneOrderIndex { get; set; }
 
     /// <summary>

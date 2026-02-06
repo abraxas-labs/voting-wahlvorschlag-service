@@ -25,39 +25,61 @@ public class ListRepository : GetOnWriteRepository<List>
     {
         var authPredicate = AuthService.ReadListPermissionsPredicate();
 
-        return await Context.Elections
+        var query = Context.Elections
             .Where(e => e.Id == electionId)
             .SelectMany(e => e.Lists)
-            .Include(l => l.ListUnion)
-                .ThenInclude(lu => lu.UnionLists)
-            .Include(l => l.ListSubUnion)
-                .ThenInclude(lu => lu.SubUnionLists)
-            .Where(authPredicate)
-            .ToListAsync();
+            .Where(authPredicate);
+
+        if (AuthService.IsWahlverwalter)
+        {
+            query = query
+                .Include(l => l.ListUnion)
+                    .ThenInclude(lu => lu.UnionLists)
+                .Include(l => l.ListSubUnion)
+                    .ThenInclude(lu => lu.SubUnionLists);
+        }
+
+        return await query.ToListAsync();
     }
 
     public async Task<IList<List>> GetListsForUnions(Guid electionId, List<Guid> ids)
     {
-        // no access control, since all callers do this already
-        return await Context.Lists
-            .Include(l => l.ListUnion)
-            .ThenInclude(lu => lu.UnionLists)
-            .Include(l => l.ListSubUnion)
-            .ThenInclude(lu => lu.SubUnionLists)
+        var authPredicate = AuthService.ReadListPermissionsPredicate();
+
+        var query = Context.Lists
             .Where(l => l.ElectionId == electionId && ids.Contains(l.Id))
-            .ToListAsync();
+            .Where(authPredicate);
+
+        if (AuthService.IsWahlverwalter)
+        {
+            query = query
+                .Include(l => l.ListUnion)
+                    .ThenInclude(lu => lu.UnionLists)
+                .Include(l => l.ListSubUnion)
+                    .ThenInclude(lu => lu.SubUnionLists);
+        }
+
+        return await query.ToListAsync();
     }
 
     public async Task<List> Get(Guid electionId, Guid id)
     {
-        var list = await Context.Lists
-                       .Include(l => l.Election)
-                       .Include(l => l.Candidates)
-                       .Include(l => l.ListUnion)
-                        .ThenInclude(lu => lu.UnionLists)
-                       .Include(l => l.ListSubUnion)
-                        .ThenInclude(lu => lu.SubUnionLists)
-                       .SingleOrDefaultAsync(l => l.Id == id) ?? throw new EntityNotFoundException(id);
+        var query = Context.Lists
+            .Include(l => l.Election)
+            .Include(l => l.Candidates)
+            .AsQueryable();
+
+        if (AuthService.IsWahlverwalter)
+        {
+            query = query
+                .Include(l => l.ListUnion)
+                    .ThenInclude(lu => lu.UnionLists)
+                .Include(l => l.ListSubUnion)
+                    .ThenInclude(lu => lu.SubUnionLists);
+        }
+
+        var list = await query
+            .SingleOrDefaultAsync(l => l.Id == id) ?? throw new EntityNotFoundException(id);
 
         AuthService.AssertListReadPermissions(list);
 
