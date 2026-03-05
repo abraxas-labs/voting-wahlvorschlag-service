@@ -70,11 +70,7 @@ public class ListCommentController
         comment.ListId = listId;
 
         var list = await _listRepository.Get(electionId, listId);
-
-        if (list.Election.IsArchived(_clock))
-        {
-            throw new BadRequestException("An archived election can't be modified.");
-        }
+        list.Election.EnsureNotArchived(_clock);
 
         // Only read permissions on the list are needed for creating comments
         // Otherwise, users couldn't comment on locked lists or lists that aren't in the Draft state
@@ -98,11 +94,7 @@ public class ListCommentController
         comment.Id = id;
 
         var existingComment = await _commentRepository.Get(id);
-
-        if (existingComment.List.Election.IsArchived(_clock))
-        {
-            throw new BadRequestException("An archived election can't be modified.");
-        }
+        existingComment.List.Election.EnsureNotArchived(_clock);
 
         if (existingComment.CreatedBy != _authService.GetUserId())
         {
@@ -117,11 +109,7 @@ public class ListCommentController
     public async Task DeleteComment(Guid electionId, Guid listId, Guid id)
     {
         var existingComment = await _commentRepository.Get(id);
-
-        if (existingComment.List.Election.IsArchived(_clock))
-        {
-            throw new BadRequestException("An archived election can't be modified.");
-        }
+        existingComment.List.Election.EnsureNotArchived(_clock);
 
         if (existingComment.CreatedBy != _authService.GetUserId())
         {

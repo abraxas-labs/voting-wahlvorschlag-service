@@ -14,6 +14,7 @@ namespace Eawv.Service.Integration.Tests.DomainOfInfluenceElectionTests;
 public class DeleteDomainOfInfluenceElectionTest : BaseRestTest
 {
     private static readonly string Url = $"api/elections/{ElectionMockData.ProporzElection.Id}/domainofinfluences/";
+    private static readonly string UrlArchivedElection = $"api/elections/{ElectionMockData.ArchivedElection.Id}/domainofinfluences/";
 
     public DeleteDomainOfInfluenceElectionTest(TestApplicationFactory factory)
         : base(factory)
@@ -42,6 +43,18 @@ public class DeleteDomainOfInfluenceElectionTest : BaseRestTest
         await AssertStatus(
             () => ElectionAdminClient.DeleteAsync($"api/elections/{ElectionMockData.GossauElection.Id}/domainofinfluences/{DomainOfInfluenceMockData.Gossau.Id}"),
             HttpStatusCode.NotFound);
+    }
+
+    /// <summary>
+    /// Ensures that deleting a domain of influence election on an archived election returns BadRequest.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+    [Fact]
+    public async Task TestWithArchivedElectionShouldThrow()
+    {
+        await AssertStatus(
+            () => ElectionAdminClient.DeleteAsync(UrlArchivedElection + DomainOfInfluenceMockData.StGallen.Id),
+            HttpStatusCode.BadRequest);
     }
 
     protected override IEnumerable<string> AuthorizedRoles()

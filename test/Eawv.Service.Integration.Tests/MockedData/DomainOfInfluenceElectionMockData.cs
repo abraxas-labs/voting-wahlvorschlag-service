@@ -34,12 +34,23 @@ public static class DomainOfInfluenceElectionMockData
         ElectionId = ElectionMockData.GossauElection.Id,
     };
 
+    public static DomainOfInfluenceElection StGallenArchivedElection => new()
+    {
+        Id = new Guid("D4E5F6A7-B8C9-0123-DEFA-234567890123"),
+        NumberOfMandates = 3,
+        CreationDate = MockedClock.UtcNowDate.AddDays(-103),
+        CreatedBy = UserMockData.TestUser.Id,
+        DomainOfInfluenceId = DomainOfInfluenceMockData.StGallen.Id,
+        ElectionId = ElectionMockData.ArchivedElection.Id,
+    };
+
     public static IEnumerable<DomainOfInfluenceElection> All
     {
         get
         {
             yield return StGallenProporzElection;
             yield return GossauElection;
+            yield return StGallenArchivedElection;
         }
     }
 

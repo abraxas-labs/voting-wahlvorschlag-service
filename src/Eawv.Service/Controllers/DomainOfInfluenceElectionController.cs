@@ -10,6 +10,7 @@ using Eawv.Service.DataAccess.Entities;
 using Eawv.Service.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Voting.Lib.Common;
 
 namespace Eawv.Service.Controllers;
 
@@ -23,19 +24,22 @@ public class DomainOfInfluenceElectionController
     private readonly ElectionRepository _electionRepository;
     private readonly AuthService _authService;
     private readonly IMapper _mapper;
+    private readonly IClock _clock;
 
     public DomainOfInfluenceElectionController(
         DomainOfInfluenceElectionRepository domainOfInfluenceElectionRepository,
         DomainOfInfluenceRepository domainOfInfluenceRepository,
         ElectionRepository electionRepository,
         AuthService authService,
-        IMapper mapper)
+        IMapper mapper,
+        IClock clock)
     {
         _domainOfInfluenceElectionRepository = domainOfInfluenceElectionRepository;
         _domainOfInfluenceRepository = domainOfInfluenceRepository;
         _electionRepository = electionRepository;
         _authService = authService;
         _mapper = mapper;
+        _clock = clock;
     }
 
     [HttpPost]
@@ -45,6 +49,7 @@ public class DomainOfInfluenceElectionController
         [FromBody] CreateDomainOfInfluenceElectionModel doiModel)
     {
         var election = await _electionRepository.GetSimpleElection(electionId);
+        election.EnsureNotArchived(_clock);
         _authService.AssertAdminOnElection(election);
 
         await EnsureHasDomainOfInfluencePermission(doiModel.Id);
@@ -63,6 +68,7 @@ public class DomainOfInfluenceElectionController
         [FromBody] UpdateDomainOfInfluenceElectionModel doiModel)
     {
         var election = await _electionRepository.GetSimpleElection(electionId);
+        election.EnsureNotArchived(_clock);
         _authService.AssertAdminOnElection(election);
 
         var doi = _mapper.Map<DomainOfInfluenceElection>(doiModel);
@@ -77,6 +83,7 @@ public class DomainOfInfluenceElectionController
     public async Task DeleteDomainOfInfluenceElection(Guid electionId, Guid domainOfInfluenceId)
     {
         var election = await _electionRepository.GetSimpleElection(electionId);
+        election.EnsureNotArchived(_clock);
         _authService.AssertAdminOnElection(election);
 
         await _domainOfInfluenceElectionRepository.Delete(electionId, domainOfInfluenceId);

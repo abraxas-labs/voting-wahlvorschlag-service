@@ -113,12 +113,7 @@ public class CandidateController
     private async Task AssertWriteAccess(Guid listId, Guid electionId)
     {
         var list = await _listRepository.Get(electionId, listId);
-
-        if (list.Election.IsArchived(_clock))
-        {
-            throw new BadRequestException("An archived election can't be modified.");
-        }
-
+        list.Election.EnsureNotArchived(_clock);
         _authService.AssertListWriteAccess(list);
     }
 }

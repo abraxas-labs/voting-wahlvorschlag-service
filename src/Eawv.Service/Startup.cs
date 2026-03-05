@@ -81,6 +81,7 @@ public class Startup
         app.UseMetricServer(_appConfig.MetricPort);
 
         app.UseRouting();
+        app.UseHttpMetrics();
 
         app.UseMiddleware<ExceptionHandlingMiddleware>();
 
@@ -108,8 +109,6 @@ public class Startup
             l.AddSupportedCultures(supportedLocales)
                 .AddSupportedUICultures(supportedLocales)
                 .SetDefaultCulture(supportedLocales[0]));
-
-        app.UseHttpMetrics();
 
         app.UseEndpoints(endpoints =>
         {

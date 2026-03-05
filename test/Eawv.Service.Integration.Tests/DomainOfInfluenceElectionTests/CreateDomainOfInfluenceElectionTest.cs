@@ -17,6 +17,7 @@ namespace Eawv.Service.Integration.Tests.DomainOfInfluenceElectionTests;
 public class CreateDomainOfInfluenceElectionTest : BaseRestTest
 {
     private static readonly string Url = $"api/elections/{ElectionMockData.ProporzElection.Id}/domainofinfluences";
+    private static readonly string UrlArchivedElection = $"api/elections/{ElectionMockData.ArchivedElection.Id}/domainofinfluences";
 
     public CreateDomainOfInfluenceElectionTest(TestApplicationFactory factory)
         : base(factory)
@@ -47,6 +48,18 @@ public class CreateDomainOfInfluenceElectionTest : BaseRestTest
                 NumberOfMandates = 3,
             }),
             HttpStatusCode.Forbidden);
+    }
+
+    /// <summary>
+    /// Ensures that creating a domain of influence election on an archived election returns BadRequest.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+    [Fact]
+    public async Task TestWithArchivedElectionShouldThrow()
+    {
+        await AssertStatus(
+            () => ElectionAdminClient.PostAsJsonAsync(UrlArchivedElection, NewValidRequest()),
+            HttpStatusCode.BadRequest);
     }
 
     protected override IEnumerable<string> AuthorizedRoles()

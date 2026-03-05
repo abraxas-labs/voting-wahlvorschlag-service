@@ -41,6 +41,15 @@ public static class ListCommentMockData
         ListId = ListMockData.GossauList.Id,
     };
 
+    public static ListComment ArchivedElectionListComment => new()
+    {
+        Id = new Guid("B2C3D4E5-F6A7-8901-BCDE-F12345678901"),
+        CreationDate = MockedClock.UtcNowDate.AddDays(-103),
+        CreatedBy = UserMockData.TestUser.Id,
+        Content = "comment on archived election list",
+        ListId = ListMockData.ArchivedElectionFdpList.Id,
+    };
+
     public static IEnumerable<ListComment> All
     {
         get
@@ -48,6 +57,7 @@ public static class ListCommentMockData
             yield return ProporzFdpListComment;
             yield return ProporzSpListComment;
             yield return GossauListComment;
+            yield return ArchivedElectionListComment;
         }
     }
 

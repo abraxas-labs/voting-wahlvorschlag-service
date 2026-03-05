@@ -14,6 +14,7 @@ using Eawv.Service.Models;
 using Eawv.Service.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Voting.Lib.Common;
 
 namespace Eawv.Service.Controllers;
 
@@ -27,19 +28,22 @@ public class InfoTextController : ControllerBase
     private readonly ITenantService _tenantService;
     private readonly AuthService _authService;
     private readonly IMapper _mapper;
+    private readonly IClock _clock;
 
     public InfoTextController(
         InfoTextRepository infoTextRepo,
         ElectionRepository electionRepository,
         ITenantService tentantService,
         AuthService authService,
-        IMapper mapper)
+        IMapper mapper,
+        IClock clock)
     {
         _infoTextRepo = infoTextRepo;
         _electionRepository = electionRepository;
         _tenantService = tentantService;
         _authService = authService;
         _mapper = mapper;
+        _clock = clock;
     }
 
     /// <summary>
@@ -75,8 +79,9 @@ public class InfoTextController : ControllerBase
 
         if (infoText.ElectionId != null)
         {
-            var el = await _electionRepository.GetSimpleElection(infoText.ElectionId.Value);
-            _authService.AssertAdminOnElection(el);
+            var election = await _electionRepository.GetSimpleElection(infoText.ElectionId.Value);
+            election.EnsureNotArchived(_clock);
+            _authService.AssertAdminOnElection(election);
         }
 
         infoText.TenantId = _authService.GetTenantId();
@@ -102,9 +107,10 @@ public class InfoTextController : ControllerBase
         }
 
         var electionIds = infoTexts.Where(t => t.ElectionId != null).Select(t => t.ElectionId.Value).Distinct();
-        foreach (var e in await _electionRepository.GetSimpleElections(electionIds))
+        foreach (var election in await _electionRepository.GetSimpleElections(electionIds))
         {
-            _authService.AssertAdminOnElection(e);
+            election.EnsureNotArchived(_clock);
+            _authService.AssertAdminOnElection(election);
         }
 
         return _mapper.Map<IEnumerable<InfoTextModel>>(await _infoTextRepo.CreateOrUpdate(infoTexts));

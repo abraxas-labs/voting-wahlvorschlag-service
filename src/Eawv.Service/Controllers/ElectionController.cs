@@ -114,11 +114,7 @@ public class ElectionController : ControllerBase
         [FromBody] UpdateElectionModel electionModel)
     {
         var existing = await _electionRepository.GetSimpleElection(id);
-
-        if (existing.IsArchived(_clock))
-        {
-            throw new BadRequestException("An archived election can't be modified.");
-        }
+        existing.EnsureNotArchived(_clock);
 
         _authService.AssertAdminOnElection(existing);
         await _fileValidationService.ValidateFile(electionModel.TenantLogo, AllowedLogoMimeTypes, Request.HttpContext.RequestAborted);
@@ -135,11 +131,7 @@ public class ElectionController : ControllerBase
     public async Task DeleteElection([Required] Guid id)
     {
         var existing = await _electionRepository.GetSimpleElection(id);
-
-        if (existing.IsArchived(_clock))
-        {
-            throw new BadRequestException("An archived election can't be modified.");
-        }
+        existing.EnsureNotArchived(_clock);
 
         _authService.AssertAdminOnElection(existing);
         await _electionRepository.Delete(id);

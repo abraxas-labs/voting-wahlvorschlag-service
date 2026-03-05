@@ -17,6 +17,7 @@ namespace Eawv.Service.Integration.Tests.ListCommentTests;
 public class CreateListCommentTest : BaseRestTest
 {
     private static readonly string Url = $"api/elections/{ElectionMockData.ProporzElection.Id}/lists/{ListMockData.ProporzFdpList.Id}/comments?theme=sg";
+    private static readonly string UrlArchivedElection = $"api/elections/{ElectionMockData.ArchivedElection.Id}/lists/{ListMockData.ArchivedElectionFdpList.Id}/comments?theme=sg";
 
     public CreateListCommentTest(TestApplicationFactory factory)
         : base(factory)
@@ -52,6 +53,18 @@ public class CreateListCommentTest : BaseRestTest
                 $"api/elections/{ElectionMockData.GossauElection.Id}/lists/{ListMockData.GossauList.Id}/comments?theme=sg",
                 NewValidRequest()),
             HttpStatusCode.Forbidden);
+    }
+
+    /// <summary>
+    /// Ensures that creating a comment on an archived election returns BadRequest.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+    [Fact]
+    public async Task TestWithArchivedElectionShouldThrow()
+    {
+        await AssertStatus(
+            () => ElectionAdminClient.PostAsJsonAsync(UrlArchivedElection, NewValidRequest()),
+            HttpStatusCode.BadRequest);
     }
 
     protected override IEnumerable<string> AuthorizedRoles()

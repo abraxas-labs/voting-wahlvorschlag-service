@@ -1,4 +1,4 @@
-# ✨ Changelog (`v2.12.19`)
+# ✨ Changelog (`v2.12.21`)
 
 All notable changes to this project will be documented in this file.
 
@@ -8,11 +8,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Version Info
 
 ```text
-This version -------- v2.12.19
-Previous version ---- v2.12.10
+This version -------- v2.12.21
+Previous version ---- v2.12.19
 Initial version ----- v2.12.10
-Total commits ------- 9
+Total commits ------- 2
 ```
+
+## [v2.12.21] - 2026-02-27
+
+### 🆕 Added
+
+- integration tests for all controller methods that enforce the election archive guard
+
+### 🔒 Security
+
+- refactor election archive guard
+- prevent unauthorized manipulation of archived elections
+
+## [v2.12.20] - 2026-02-18
+
+### 🔄 Changed
+
+- reorder metrics middleware calls in Startup configuration to catch final response status.
 
 ## [v2.12.19] - 2026-02-06
 

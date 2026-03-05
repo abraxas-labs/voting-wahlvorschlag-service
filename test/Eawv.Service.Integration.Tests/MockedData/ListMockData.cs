@@ -110,6 +110,22 @@ public static class ListMockData
         Representative = UserMockData.FdpUser.Id,
     };
 
+    public static List ArchivedElectionFdpList => new()
+    {
+        Id = new Guid("A1B2C3D4-E5F6-7890-ABCD-EF1234567890"),
+        CreationDate = MockedClock.UtcNowDate.AddDays(-103),
+        CreatedBy = UserMockData.TestUser.Id,
+        ResponsiblePartyTenantId = TenantMockData.FdpStGallen.Id,
+        Name = "Archived List FDP",
+        Description = "FDP on archived election",
+        SortOrder = 0,
+        State = ListState.Draft,
+        ElectionId = ElectionMockData.ArchivedElection.Id,
+        DeputyUsers = [],
+        MemberUsers = [],
+        Representative = UserMockData.FdpUser.Id,
+    };
+
     public static IEnumerable<List> All
     {
         get
@@ -120,6 +136,7 @@ public static class ListMockData
             yield return GossauList;
             yield return ProporzFdpListFutureAvailableElection;
             yield return ProporzFdpListPastElection;
+            yield return ArchivedElectionFdpList;
         }
     }
 

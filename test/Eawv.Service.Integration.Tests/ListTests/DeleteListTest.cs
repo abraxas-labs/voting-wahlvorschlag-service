@@ -16,6 +16,7 @@ namespace Eawv.Service.Integration.Tests.ListTests;
 public class DeleteListTest : BaseRestTest
 {
     private static readonly string Url = $"api/elections/{ElectionMockData.MajorzElection.Id}/lists/";
+    private static readonly string UrlArchivedElection = $"api/elections/{ElectionMockData.ArchivedElection.Id}/lists/";
 
     public DeleteListTest(TestApplicationFactory factory)
         : base(factory)
@@ -64,6 +65,18 @@ public class DeleteListTest : BaseRestTest
         });
         await AssertStatus(
             () => UserClient.DeleteAsync(Url + ListMockData.MajorzFdpList.Id),
+            HttpStatusCode.BadRequest);
+    }
+
+    /// <summary>
+    /// Ensures that deleting a list on an archived election returns BadRequest.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+    [Fact]
+    public async Task TestWithArchivedElectionShouldThrow()
+    {
+        await AssertStatus(
+            () => ElectionAdminClient.DeleteAsync(UrlArchivedElection + ListMockData.ArchivedElectionFdpList.Id),
             HttpStatusCode.BadRequest);
     }
 

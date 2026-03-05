@@ -14,6 +14,7 @@ namespace Eawv.Service.Integration.Tests.BallotDocumentTests;
 public class DeleteBallotDocumentTest : BaseRestTest
 {
     private static readonly string Url = $"api/elections/{ElectionMockData.ProporzElection.Id}/documents/";
+    private static readonly string UrlArchivedElection = $"api/elections/{ElectionMockData.ArchivedElection.Id}/documents/";
 
     public DeleteBallotDocumentTest(TestApplicationFactory factory)
         : base(factory)
@@ -41,6 +42,18 @@ public class DeleteBallotDocumentTest : BaseRestTest
         await AssertStatus(
             () => ElectionAdminClient.DeleteAsync($"api/elections/{ElectionMockData.GossauElection.Id}/documents/{BallotDocumentMockData.GossauDocument.Id}"),
             HttpStatusCode.NotFound);
+    }
+
+    /// <summary>
+    /// Ensures that deleting a document on an archived election returns BadRequest.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+    [Fact]
+    public async Task TestWithArchivedElectionShouldThrow()
+    {
+        await AssertStatus(
+            () => ElectionAdminClient.DeleteAsync(UrlArchivedElection + BallotDocumentMockData.ArchivedElectionDocument.Id),
+            HttpStatusCode.BadRequest);
     }
 
     protected override IEnumerable<string> AuthorizedRoles()

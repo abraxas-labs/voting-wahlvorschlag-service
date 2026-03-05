@@ -73,11 +73,7 @@ public class ListUnionController
     private async Task DeleteFromUnion(Guid electionId, Guid listId, bool subUnion)
     {
         var list = await _listRepository.Get(electionId, listId);
-
-        if (list.Election.IsArchived(_clock))
-        {
-            throw new BadRequestException("An archived election can't be modified.");
-        }
+        list.Election.EnsureNotArchived(_clock);
 
         var listUnion = (subUnion ? list.ListSubUnion : list.ListUnion) ?? throw new EntityNotFoundException(list.Id);
 
@@ -114,11 +110,7 @@ public class ListUnionController
 
         // checks access rights on this election
         var election = await _electionRepository.Get(electionId);
-
-        if (election.IsArchived(_clock))
-        {
-            throw new BadRequestException("An archived election can't be modified.");
-        }
+        election.EnsureNotArchived(_clock);
 
         var lists = await _listRepository.GetListsForUnions(electionId, listIds);
 

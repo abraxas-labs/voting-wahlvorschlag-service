@@ -17,6 +17,7 @@ namespace Eawv.Service.Integration.Tests.BallotDocumentTests;
 public class CreateBallotDocumentTest : BaseRestTest
 {
     private static readonly string Url = $"api/elections/{ElectionMockData.ProporzElection.Id}/documents";
+    private static readonly string UrlArchivedElection = $"api/elections/{ElectionMockData.ArchivedElection.Id}/documents";
 
     public CreateBallotDocumentTest(TestApplicationFactory factory)
         : base(factory)
@@ -42,6 +43,18 @@ public class CreateBallotDocumentTest : BaseRestTest
         await AssertStatus(
             () => ElectionAdminClient.PostAsJsonAsync($"api/elections/{ElectionMockData.GossauElection.Id}/documents", NewValidRequest()),
             HttpStatusCode.NotFound);
+    }
+
+    /// <summary>
+    /// Ensures that creating a document on an archived election returns BadRequest.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+    [Fact]
+    public async Task TestWithArchivedElectionShouldThrow()
+    {
+        await AssertStatus(
+            () => ElectionAdminClient.PostAsJsonAsync(UrlArchivedElection, NewValidRequest()),
+            HttpStatusCode.BadRequest);
     }
 
     protected override IEnumerable<string> AuthorizedRoles()

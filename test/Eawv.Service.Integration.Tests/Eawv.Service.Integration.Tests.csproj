@@ -5,6 +5,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="InfoTextTests\_snapshots\" />
     <Folder Include="UserTests\_snapshots\" />
   </ItemGroup>
 

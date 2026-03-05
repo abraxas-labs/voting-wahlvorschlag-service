@@ -42,6 +42,18 @@ public class DeleteElectionTest : BaseRestTest
             HttpStatusCode.NotFound);
     }
 
+    /// <summary>
+    /// Ensures that deleting an archived election returns BadRequest.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+    [Fact]
+    public async Task TestWithArchivedElectionShouldThrow()
+    {
+        await AssertStatus(
+            () => ElectionAdminClient.DeleteAsync(Url + ElectionMockData.ArchivedElection.Id),
+            HttpStatusCode.BadRequest);
+    }
+
     protected override IEnumerable<string> AuthorizedRoles()
     {
         yield return Role.Wahlverwalter;

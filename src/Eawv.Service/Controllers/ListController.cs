@@ -72,11 +72,7 @@ public class ListController
     public async Task<ListModel> CreateList(Guid electionId, [FromBody] ModifyListModel listModel)
     {
         var election = await _electionRepository.GetSimpleElection(electionId);
-
-        if (election.IsArchived(_clock))
-        {
-            throw new BadRequestException("An archived election can't be modified.");
-        }
+        election.EnsureNotArchived(_clock);
 
         var list = _mapper.Map<List>(listModel);
         list.ElectionId = electionId;
@@ -111,11 +107,7 @@ public class ListController
         var existing = await _listRepository.Get(electionId, id);
 
         var election = await _electionRepository.GetSimpleElection(electionId);
-
-        if (election.IsArchived(_clock))
-        {
-            throw new BadRequestException("An archived election can't be modified.");
-        }
+        election.EnsureNotArchived(_clock);
 
         var list = _mapper.Map<List>(listModel);
         list.Id = id;
@@ -169,11 +161,7 @@ public class ListController
 
         var existing = await _listRepository.Get(electionId, id);
         var election = await _electionRepository.GetSimpleElection(electionId);
-
-        if (election.IsArchived(_clock))
-        {
-            throw new BadRequestException("An archived election can't be modified.");
-        }
+        election.EnsureNotArchived(_clock);
 
         if (!IsNewStateValid(existing.State, list.State))
         {
@@ -205,11 +193,7 @@ public class ListController
     public async Task DeleteList(Guid electionId, Guid id)
     {
         var existing = await _listRepository.Get(electionId, id);
-
-        if (existing.Election.IsArchived(_clock))
-        {
-            throw new BadRequestException("An archived election can't be modified.");
-        }
+        existing.Election.EnsureNotArchived(_clock);
 
         _authService.AssertListWriteAccess(existing);
         await _listRepository.Delete(id);

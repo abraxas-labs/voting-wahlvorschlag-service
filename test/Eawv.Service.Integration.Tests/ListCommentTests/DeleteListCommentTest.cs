@@ -14,6 +14,7 @@ namespace Eawv.Service.Integration.Tests.ListCommentTests;
 public class DeleteListCommentTest : BaseRestTest
 {
     private static readonly string Url = $"api/elections/{ElectionMockData.ProporzElection.Id}/lists/{ListMockData.ProporzFdpList.Id}/comments/{ListCommentMockData.ProporzFdpListComment.Id}?theme=sg";
+    private static readonly string UrlArchivedElection = $"api/elections/{ElectionMockData.ArchivedElection.Id}/lists/{ListMockData.ArchivedElectionFdpList.Id}/comments/{ListCommentMockData.ArchivedElectionListComment.Id}?theme=sg";
 
     public DeleteListCommentTest(TestApplicationFactory factory)
         : base(factory)
@@ -51,6 +52,18 @@ public class DeleteListCommentTest : BaseRestTest
             () => UserClient.DeleteAsync(
                 $"api/elections/{ElectionMockData.GossauElection.Id}/lists/{ListMockData.GossauList.Id}/comments/{ListCommentMockData.GossauListComment.Id}?theme=sg"),
             HttpStatusCode.Forbidden);
+    }
+
+    /// <summary>
+    /// Ensures that deleting a comment on an archived election returns BadRequest.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+    [Fact]
+    public async Task TestWithArchivedElectionShouldThrow()
+    {
+        await AssertStatus(
+            () => ElectionAdminClient.DeleteAsync(UrlArchivedElection),
+            HttpStatusCode.BadRequest);
     }
 
     protected override IEnumerable<string> AuthorizedRoles()

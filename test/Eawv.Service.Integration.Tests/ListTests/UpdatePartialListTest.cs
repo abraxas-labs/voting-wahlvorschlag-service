@@ -22,6 +22,7 @@ namespace Eawv.Service.Integration.Tests.ListTests;
 public class UpdatePartialListTest : BaseRestTest
 {
     private static readonly string Url = $"api/elections/{ElectionMockData.ProporzElection.Id}/lists/";
+    private static readonly string UrlArchivedElection = $"api/elections/{ElectionMockData.ArchivedElection.Id}/lists/";
 
     public UpdatePartialListTest(TestApplicationFactory factory)
         : base(factory)
@@ -89,6 +90,18 @@ public class UpdatePartialListTest : BaseRestTest
         await AssertStatus(
             () => UserClient.PatchAsJsonAsync(Url + ListMockData.ProporzFdpListPastElection.Id + "?theme=sg", new PatchListModel { State = ListState.Submitted }),
             HttpStatusCode.Forbidden);
+    }
+
+    /// <summary>
+    /// Ensures that patching a list on an archived election returns BadRequest.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+    [Fact]
+    public async Task TestWithArchivedElectionShouldThrow()
+    {
+        await AssertStatus(
+            () => ElectionAdminClient.PatchAsJsonAsync(UrlArchivedElection + ListMockData.ArchivedElectionFdpList.Id + "?theme=sg", NewValidRequest()),
+            HttpStatusCode.BadRequest);
     }
 
     protected override IEnumerable<string> AuthorizedRoles()

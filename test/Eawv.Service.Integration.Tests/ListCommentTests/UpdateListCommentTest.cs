@@ -17,6 +17,7 @@ namespace Eawv.Service.Integration.Tests.ListCommentTests;
 public class UpdateListCommentTest : BaseRestTest
 {
     private static readonly string Url = $"api/elections/{ElectionMockData.ProporzElection.Id}/lists/{ListMockData.ProporzFdpList.Id}/comments/{ListCommentMockData.ProporzFdpListComment.Id}?theme=sg";
+    private static readonly string UrlArchivedElection = $"api/elections/{ElectionMockData.ArchivedElection.Id}/lists/{ListMockData.ArchivedElectionFdpList.Id}/comments/{ListCommentMockData.ArchivedElectionListComment.Id}?theme=sg";
 
     public UpdateListCommentTest(TestApplicationFactory factory)
         : base(factory)
@@ -53,6 +54,18 @@ public class UpdateListCommentTest : BaseRestTest
                 $"api/elections/{ElectionMockData.GossauElection.Id}/lists/{ListMockData.GossauList.Id}/comments/{ListCommentMockData.GossauListComment.Id}?theme=sg",
                 NewValidRequest()),
             HttpStatusCode.Forbidden);
+    }
+
+    /// <summary>
+    /// Ensures that updating a comment on an archived election returns BadRequest.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+    [Fact]
+    public async Task TestWithArchivedElectionShouldThrow()
+    {
+        await AssertStatus(
+            () => ElectionAdminClient.PutAsJsonAsync(UrlArchivedElection, NewValidRequest()),
+            HttpStatusCode.BadRequest);
     }
 
     protected override IEnumerable<string> AuthorizedRoles()

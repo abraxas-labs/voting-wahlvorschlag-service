@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using Eawv.Service.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Voting.Lib.Common;
 
@@ -85,5 +86,13 @@ public class Election : BaseEntity
     public bool IsArchived(IClock clock)
     {
         return SubmissionDeadlineEnd.AddDays(NumberOfDaysToArchiveAfterDeadlineEnd) < clock.UtcNow;
+    }
+
+    public void EnsureNotArchived(IClock clock)
+    {
+        if (IsArchived(clock))
+        {
+            throw new BadRequestException("An archived election can't be modified.");
+        }
     }
 }

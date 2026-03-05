@@ -18,6 +18,7 @@ namespace Eawv.Service.Integration.Tests.ListTests;
 public class UpdateListTest : BaseRestTest
 {
     private static readonly string Url = $"api/elections/{ElectionMockData.ProporzElection.Id}/lists/";
+    private static readonly string UrlArchivedElection = $"api/elections/{ElectionMockData.ArchivedElection.Id}/lists/";
 
     public UpdateListTest(TestApplicationFactory factory)
         : base(factory)
@@ -67,6 +68,18 @@ public class UpdateListTest : BaseRestTest
         await AssertStatus(
             () => UserClient.PutAsJsonAsync(Url + ListMockData.ProporzFdpList.Id, NewValidRequest(x => x.MemberUsers = [UserMockData.SpUser.Id])),
             HttpStatusCode.Forbidden);
+    }
+
+    /// <summary>
+    /// Ensures that updating a list on an archived election returns BadRequest.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+    [Fact]
+    public async Task TestWithArchivedElectionShouldThrow()
+    {
+        await AssertStatus(
+            () => ElectionAdminClient.PutAsJsonAsync(UrlArchivedElection + ListMockData.ArchivedElectionFdpList.Id, NewValidRequest()),
+            HttpStatusCode.BadRequest);
     }
 
     protected override IEnumerable<string> AuthorizedRoles()

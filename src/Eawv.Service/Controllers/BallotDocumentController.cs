@@ -13,6 +13,7 @@ using Eawv.Service.Models;
 using Eawv.Service.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Voting.Lib.Common;
 
 namespace Eawv.Service.Controllers;
 
@@ -31,19 +32,22 @@ public class BallotDocumentController : ControllerBase
     private readonly ITenantService _tenantService;
     private readonly ElectionRepository _electionRepository;
     private readonly FileValidationService _fileValidationService;
+    private readonly IClock _clock;
 
     public BallotDocumentController(
         BallotDocumentRepository documentRepository,
         IMapper mapper,
         ITenantService tenantService,
         ElectionRepository electionRepository,
-        FileValidationService fileValidationService)
+        FileValidationService fileValidationService,
+        IClock clock)
     {
         _documentRepository = documentRepository;
         _mapper = mapper;
         _tenantService = tenantService;
         _electionRepository = electionRepository;
         _fileValidationService = fileValidationService;
+        _clock = clock;
     }
 
     [HttpGet("{id:Guid}")]
@@ -60,7 +64,7 @@ public class BallotDocumentController : ControllerBase
         var document = _mapper.Map<BallotDocument>(documentModel);
         document.ElectionId = electionId;
 
-        await AssertAccessToElection(electionId);
+        await AssertWriteAccessToElection(electionId);
         await _fileValidationService.ValidateFile(documentModel.Name, documentModel.Document, AllowedDocumentsMimeTypes, Request.HttpContext.RequestAborted);
 
         return _mapper.Map<EmptyBallotDocumentModel>(await _documentRepository.Create(document));
@@ -71,13 +75,15 @@ public class BallotDocumentController : ControllerBase
     public async Task DeleteDocument(Guid id)
     {
         var document = await _documentRepository.Get(id);
-        await AssertAccessToElection(document.ElectionId);
+        await AssertWriteAccessToElection(document.ElectionId);
         await _documentRepository.Delete(id);
     }
 
-    private async Task AssertAccessToElection(Guid electionId)
+    private async Task AssertWriteAccessToElection(Guid electionId)
     {
         var election = await _electionRepository.GetSimpleElection(electionId);
+        election.EnsureNotArchived(_clock);
+
         var relevantTenantId = await _tenantService.GetParentOrCurrentTenantId();
         if (relevantTenantId != election.TenantId)
         {

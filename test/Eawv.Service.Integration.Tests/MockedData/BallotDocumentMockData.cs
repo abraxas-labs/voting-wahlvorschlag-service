@@ -34,12 +34,23 @@ public static class BallotDocumentMockData
         Document = [4, 5, 6],
     };
 
+    public static BallotDocument ArchivedElectionDocument => new()
+    {
+        Id = new Guid("C3D4E5F6-A7B8-9012-CDEF-123456789012"),
+        CreationDate = MockedClock.UtcNowDate.AddDays(-103),
+        CreatedBy = UserMockData.StGallenUser.Id,
+        ElectionId = ElectionMockData.ArchivedElection.Id,
+        Name = "archived.pdf",
+        Document = [7, 8, 9],
+    };
+
     public static IEnumerable<BallotDocument> All
     {
         get
         {
             yield return ProporzDocument;
             yield return GossauDocument;
+            yield return ArchivedElectionDocument;
         }
     }
 

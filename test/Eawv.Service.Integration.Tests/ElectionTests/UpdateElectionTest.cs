@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -37,6 +38,18 @@ public class UpdateElectionTest : BaseRestTest
         var doi = await GetSuccessfulResponse<ElectionOverviewModel>(
             () => ElectionAdminClient.PutAsJsonAsync(Url + ElectionMockData.ProporzElection.Id, NewValidRequest()));
         doi.MatchSnapshot();
+    }
+
+    /// <summary>
+    /// Ensures that updating an archived election returns BadRequest.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+    [Fact]
+    public async Task TestWithArchivedElectionShouldThrow()
+    {
+        await AssertStatus(
+            () => ElectionAdminClient.PutAsJsonAsync(Url + ElectionMockData.ArchivedElection.Id, NewValidRequest()),
+            HttpStatusCode.BadRequest);
     }
 
     protected override IEnumerable<string> AuthorizedRoles()
