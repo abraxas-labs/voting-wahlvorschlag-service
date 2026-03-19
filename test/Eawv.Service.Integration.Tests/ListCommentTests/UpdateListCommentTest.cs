@@ -56,6 +56,16 @@ public class UpdateListCommentTest : BaseRestTest
             HttpStatusCode.Forbidden);
     }
 
+    [Fact]
+    public async Task TestWrongElectionIdShouldNotWork()
+    {
+        await AssertStatus(
+            () => UserClient.PutAsJsonAsync(
+                $"api/elections/{ElectionMockData.FutureAvailableElection.Id}/lists/{ListMockData.ProporzFdpListFutureAvailableElection.Id}/comments/{ListCommentMockData.ProporzFdpListComment.Id}?theme=sg",
+                NewValidRequest()),
+            HttpStatusCode.BadRequest);
+    }
+
     /// <summary>
     /// Ensures that updating a comment on an archived election returns BadRequest.
     /// </summary>

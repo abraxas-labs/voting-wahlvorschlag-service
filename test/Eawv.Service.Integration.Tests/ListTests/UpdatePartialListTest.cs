@@ -34,6 +34,7 @@ public class UpdatePartialListTest : BaseRestTest
         await base.InitializeAsync();
         await ElectionMockData.Seed(RunScoped);
         await ListMockData.Seed(RunScoped);
+        await CandidateMockData.Seed(RunScoped);
 
         NotificationServiceMock.SentEmails.Clear();
     }
@@ -101,6 +102,21 @@ public class UpdatePartialListTest : BaseRestTest
     {
         await AssertStatus(
             () => ElectionAdminClient.PatchAsJsonAsync(UrlArchivedElection + ListMockData.ArchivedElectionFdpList.Id + "?theme=sg", NewValidRequest()),
+            HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task TestListWithNoCandidatesShouldThrow()
+    {
+        await RunOnDb(db =>
+        {
+            return db.Candidates
+                .Where(l => l.ListId == ListMockData.ProporzFdpList.Id)
+                .ExecuteDeleteAsync();
+        });
+
+        await AssertStatus(
+            () => UserClient.PatchAsJsonAsync(Url + ListMockData.ProporzFdpList.Id + "?theme=sg", new PatchListModel { State = ListState.Submitted }),
             HttpStatusCode.BadRequest);
     }
 

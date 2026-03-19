@@ -1,4 +1,4 @@
-# ✨ Changelog (`v2.12.21`)
+# ✨ Changelog (`v2.14.1`)
 
 All notable changes to this project will be documented in this file.
 
@@ -8,11 +8,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Version Info
 
 ```text
-This version -------- v2.12.21
-Previous version ---- v2.12.19
+This version -------- v2.14.1
+Previous version ---- v2.12.21
 Initial version ----- v2.12.10
-Total commits ------- 2
+Total commits ------- 3
 ```
+
+## [v2.14.1] - 2026-03-18
+
+### 🔒 Security
+
+- ensure election and list id match when updating/deleting comments
+
+## [v2.14.0] - 2026-03-04
+
+### 🔄 Changed
+
+- require one candidate per list
+
+## [v2.13.0] - 2026-03-04
+
+### 🔄 Changed
+
+- remove majority election candidate number from exports
 
 ## [v2.12.21] - 2026-02-27
 

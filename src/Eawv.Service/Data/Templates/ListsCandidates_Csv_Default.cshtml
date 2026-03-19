@@ -15,7 +15,7 @@
             var sex = ((int)candidate.Sex) - 1;
             var fields = new List<string>
             {
-                candidate.Index.ToString("D2"),
+                Model.IsMajorz ? string.Empty : candidate.Index.ToString("D2"),
                 candidate.FamilyName,
                 candidate.FirstName,
                 candidate.BallotFamilyName,

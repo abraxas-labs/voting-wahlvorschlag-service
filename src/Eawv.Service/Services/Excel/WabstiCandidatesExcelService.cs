@@ -51,7 +51,7 @@ public class WabstiCandidatesExcelService : IExcelExport
         return bag.GetClonedAndOrderedCandidates().Select((candidate, i) => new object[]
         {
             i + 1,
-            candidate.Index.ToString("D2", CultureInfo.InvariantCulture),
+            bag.IsMajorz ? string.Empty : candidate.Index.ToString("D2", CultureInfo.InvariantCulture),
             candidate.Sex == SexType.Male ? "Herr" : "Frau",
             candidate.Title,
             candidate.BallotFamilyName,

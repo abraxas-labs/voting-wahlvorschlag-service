@@ -96,6 +96,11 @@ public class ListCommentController
         var existingComment = await _commentRepository.Get(id);
         existingComment.List.Election.EnsureNotArchived(_clock);
 
+        if (existingComment.ListId != listId || existingComment.List.ElectionId != electionId)
+        {
+            throw new BadRequestException("Comment does not match with list id or election id");
+        }
+
         if (existingComment.CreatedBy != _authService.GetUserId())
         {
             throw new ForbiddenException(id);
@@ -110,6 +115,11 @@ public class ListCommentController
     {
         var existingComment = await _commentRepository.Get(id);
         existingComment.List.Election.EnsureNotArchived(_clock);
+
+        if (existingComment.ListId != listId || existingComment.List.ElectionId != electionId)
+        {
+            throw new BadRequestException("Comment does not match with list id or election id");
+        }
 
         if (existingComment.CreatedBy != _authService.GetUserId())
         {

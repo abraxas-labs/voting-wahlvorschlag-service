@@ -174,6 +174,11 @@ public class ListController
             EnsureCanSubmit(election);
         }
 
+        if (list.State != ListState.Draft && existing.Candidates.Count == 0)
+        {
+            throw new BadRequestException("At least one candidate is required");
+        }
+
         _authService.AssertListWriteAccess(existing);
 
         var oldState = existing.State;

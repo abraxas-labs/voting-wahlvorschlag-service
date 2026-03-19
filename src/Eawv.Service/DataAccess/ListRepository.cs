@@ -26,6 +26,7 @@ public class ListRepository : GetOnWriteRepository<List>
         var authPredicate = AuthService.ReadListPermissionsPredicate();
 
         var query = Context.Elections
+            .AsSplitQuery()
             .Where(e => e.Id == electionId)
             .SelectMany(e => e.Lists)
             .Where(authPredicate);
@@ -39,7 +40,7 @@ public class ListRepository : GetOnWriteRepository<List>
                     .ThenInclude(lu => lu.SubUnionLists);
         }
 
-        return await query.ToListAsync();
+        return await query.Include(x => x.Candidates).ToListAsync();
     }
 
     public async Task<IList<List>> GetListsForUnions(Guid electionId, List<Guid> ids)

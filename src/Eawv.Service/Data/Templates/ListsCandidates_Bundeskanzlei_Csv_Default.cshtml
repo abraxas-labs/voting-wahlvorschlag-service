@@ -16,7 +16,7 @@ Listennummer;Kandidatennummer;Amtliche Namen;Amtliche Vornamen;Politische Namen;
             var fields = new List<string>
             {
                 list.Indenture,
-                candidate.Index.ToString("D2"),
+                Model.IsMajorz ? string.Empty : candidate.Index.ToString("D2"),
                 candidate.FamilyName,
                 candidate.FirstName,
                 candidate.BallotFamilyName,

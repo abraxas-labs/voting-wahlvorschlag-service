@@ -54,6 +54,15 @@ public class DeleteListCommentTest : BaseRestTest
             HttpStatusCode.Forbidden);
     }
 
+    [Fact]
+    public async Task TestWrongElectionIdShouldNotWork()
+    {
+        await AssertStatus(
+            () => UserClient.DeleteAsync(
+                $"api/elections/{ElectionMockData.FutureAvailableElection.Id}/lists/{ListMockData.ProporzFdpListFutureAvailableElection.Id}/comments/{ListCommentMockData.ProporzFdpListComment.Id}?theme=sg"),
+            HttpStatusCode.BadRequest);
+    }
+
     /// <summary>
     /// Ensures that deleting a comment on an archived election returns BadRequest.
     /// </summary>

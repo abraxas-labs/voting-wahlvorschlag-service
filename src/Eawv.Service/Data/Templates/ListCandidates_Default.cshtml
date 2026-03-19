@@ -110,7 +110,10 @@
     <table class="fullwidth" aria-describedby="table-heading">
         <thead>
         <tr>
-            <th scope="col" rowspan="2">Nr.</th>
+            @if (Model.IsProporz)
+            {
+                <th scope="col" rowspan="2">Nr.</th>
+            }
             <th scope="col" class="bot-no-border" style="width: 3cm">Name</th>
             <th scope="col" class="bot-no-border" style="width: 3cm">Vorname(n)</th>
             <th scope="col" rowspan="2">
@@ -176,7 +179,10 @@
         @foreach (var candidate in Model.GetClonedAndOrderedCandidates())
         {
             <tr>
-                <td class="filled right">@candidate.Index.ToString("D2")</td>
+                @if (Model.IsProporz)
+                {
+                    <td class="filled right">@candidate.Index.ToString("D2")</td>
+                }
                 @if (candidate.IsNew)
                 {
                     <td>
