@@ -45,9 +45,7 @@ public abstract class BaseRepository<TEntity>
 
     public virtual async Task<TEntity> Create(TEntity entity)
     {
-        entity.CreationDate = Clock.UtcNow;
-        entity.CreatedBy = AuthService.GetUserId();
-
+        SetCreationFields(entity);
         Context.Add(entity);
 
         await Save();
@@ -68,9 +66,7 @@ public abstract class BaseRepository<TEntity>
 
     public virtual async Task<TEntity> Update(TEntity entity, bool ignoreTransaction, bool reload)
     {
-        entity.ModifiedDate = Clock.UtcNow;
-        entity.ModifiedBy = AuthService.GetUserId();
-
+        SetModifiedFields(entity);
         Detach(entity.Id);
 
         var entry = DbSet.Attach(entity);
@@ -132,8 +128,21 @@ public abstract class BaseRepository<TEntity>
 
         foreach (var entity in collection)
         {
-            entity.CreatedBy = AuthService.GetUserId();
-            entity.CreationDate = Clock.UtcNow;
+            SetCreationFields(entity);
         }
+    }
+
+    protected void SetCreationFields<T>(T entity)
+        where T : BaseEntity
+    {
+        entity.CreatedBy = AuthService.GetUserId();
+        entity.CreationDate = Clock.UtcNow;
+    }
+
+    protected void SetModifiedFields<T>(T entity)
+        where T : BaseEntity
+    {
+        entity.ModifiedDate = Clock.UtcNow;
+        entity.ModifiedBy = AuthService.GetUserId();
     }
 }

@@ -11,6 +11,7 @@ using Eawv.Service.Authentication;
 using Eawv.Service.DataAccess.Entities;
 using Eawv.Service.Integration.Tests.MockedData;
 using Eawv.Service.Models;
+using Voting.Lib.Testing.Mocks;
 using Voting.Lib.Testing.Utils;
 using Xunit;
 
@@ -39,8 +40,23 @@ public class UpdateAllCandidatesTest : BaseRestTest
     [Fact]
     public async Task TestAsElectionAdmin()
     {
-        var candidates = await GetSuccessfulResponse<List<CandidateModel>>(() => ElectionAdminClient.PutAsJsonAsync(Url, NewValidRequest()));
-        candidates.MatchSnapshot(x => x.Id);
+        // Mock the clock to see that the ModifiedDate changed (and CreationDate should stay the same)
+        var mockedClock = GetService<MockedClock>();
+        var previousUtcNow = mockedClock.UtcNow;
+        mockedClock.UtcNow = previousUtcNow.AddDays(3).AddHours(2);
+
+        // Use a different user to test that the CreatedBy stays the same, but the ModifiedBy should change
+        using var client = CreateHttpClient(true, TenantMockData.StGallen.Id, "some-other-user", Role.Wahlverwalter);
+
+        try
+        {
+            var candidates = await GetSuccessfulResponse<List<CandidateModel>>(() => client.PutAsJsonAsync(Url, NewValidRequest()));
+            candidates.MatchSnapshot(x => x.Id);
+        }
+        finally
+        {
+            mockedClock.UtcNow = previousUtcNow;
+        }
     }
 
     [Fact]
@@ -48,6 +64,31 @@ public class UpdateAllCandidatesTest : BaseRestTest
     {
         var candidates = await GetSuccessfulResponse<List<CandidateModel>>(() => UserClient.PutAsJsonAsync(Url, NewValidRequest()));
         candidates.MatchSnapshot(x => x.Id);
+    }
+
+    [Fact]
+    public async Task TestShouldNotChangeUnmodifiedCandidates()
+    {
+        var candidates = await GetSuccessfulResponse<List<CandidateModel>>(() => UserClient.PutAsJsonAsync(Url, NewValidRequest()));
+        candidates.MatchSnapshot(x => x.Id);
+
+        // Mock the clock to see whether the ModifiedDate changed
+        var mockedClock = GetService<MockedClock>();
+        var previousUtcNow = mockedClock.UtcNow;
+        mockedClock.UtcNow = previousUtcNow.AddDays(3).AddHours(2);
+
+        try
+        {
+            // The second time, nothing should be modified => same snapshot
+            var req = NewValidRequest();
+            req[1].Id = candidates[1].Id;
+            candidates = await GetSuccessfulResponse<List<CandidateModel>>(() => UserClient.PutAsJsonAsync(Url, req));
+            candidates.MatchSnapshot(x => x.Id);
+        }
+        finally
+        {
+            mockedClock.UtcNow = previousUtcNow;
+        }
     }
 
     [Fact]

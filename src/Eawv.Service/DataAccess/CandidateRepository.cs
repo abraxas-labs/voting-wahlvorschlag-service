@@ -58,29 +58,95 @@ public class CandidateRepository : BaseRepository<Candidate>
             .Include(c => c.MarkedElements)
             .Where(c => c.ListId == listId)
             .ToListAsync();
-        DbSet.RemoveRange(existingCandidates);
+
+        var candidatesToKeep = candidates.Select(c => c.Id).ToHashSet();
+        var candidatesToDelete = existingCandidates.Where(c => !candidatesToKeep.Contains(c.Id)).ToList();
+        DbSet.RemoveRange(candidatesToDelete);
 
         foreach (var candidate in candidates)
         {
-            SetCreationFields(candidate.MarkedElements);
-
-            // Restore correct creation parameters for already existing candidates
             var existing = existingCandidates.SingleOrDefault(c => c.Id == candidate.Id);
-            if (existing != null)
+            if (existing == null)
             {
+                SetCreationFields(candidate.MarkedElements);
+                await Create(candidate);
+            }
+            else
+            {
+                if (AreCandidatesEqual(existing, candidate))
+                {
+                    continue;
+                }
+
+                SetCreatedModifiedFields(candidate.MarkedElements, existing.MarkedElements);
+
+                // Restore correct creation parameters for already existing candidates
                 candidate.CreatedBy = existing.CreatedBy;
                 candidate.CreationDate = existing.CreationDate;
-                candidate.ModifiedBy = AuthService.GetUserId();
-                candidate.ModifiedDate = Clock.UtcNow;
+                await Update(candidate);
             }
-
-            await Create(candidate);
         }
 
         await IncreaseListVersion(listId);
 
         await Save(true);
         transaction.Complete();
+    }
+
+    private void SetCreatedModifiedFields(ICollection<MarkedElement> markedElements, ICollection<MarkedElement> existingElements)
+    {
+        var existingFields = existingElements.ToDictionary(e => e.Field);
+        foreach (var markedElement in markedElements)
+        {
+            if (existingFields.TryGetValue(markedElement.Field, out var existing))
+            {
+                markedElement.CreatedBy = existing.CreatedBy;
+                markedElement.CreationDate = existing.CreationDate;
+                SetModifiedFields(markedElement);
+            }
+            else
+            {
+                SetCreationFields(markedElement);
+            }
+        }
+    }
+
+    private bool AreCandidatesEqual(Candidate existing, Candidate candidate)
+    {
+        var equal = existing.FamilyName == candidate.FamilyName &&
+            existing.FirstName == candidate.FirstName &&
+            existing.Title == candidate.Title &&
+            existing.OccupationalTitle == candidate.OccupationalTitle &&
+            existing.DateOfBirth == candidate.DateOfBirth &&
+            existing.Sex == candidate.Sex &&
+            existing.Origin == candidate.Origin &&
+            existing.Street == candidate.Street &&
+            existing.HouseNumber == candidate.HouseNumber &&
+            existing.ZipCode == candidate.ZipCode &&
+            existing.Locality == candidate.Locality &&
+            existing.BallotFamilyName == candidate.BallotFamilyName &&
+            existing.BallotFirstName == candidate.BallotFirstName &&
+            existing.BallotOccupationalTitle == candidate.BallotOccupationalTitle &&
+            existing.BallotLocality == candidate.BallotLocality &&
+            existing.Incumbent == candidate.Incumbent &&
+            existing.Cloned == candidate.Cloned &&
+            existing.Index == candidate.Index &&
+            existing.OrderIndex == candidate.OrderIndex &&
+            existing.CloneOrderIndex == candidate.CloneOrderIndex &&
+            existing.Party == candidate.Party;
+
+        if (!equal)
+        {
+            return false;
+        }
+
+        if (existing.MarkedElements.Count != candidate.MarkedElements.Count)
+        {
+            return false;
+        }
+
+        var existingFields = existing.MarkedElements.Select(m => m.Field).ToHashSet();
+        return candidate.MarkedElements.All(m => existingFields.Contains(m.Field));
     }
 
     private async Task IncreaseListVersion(Guid listId)
