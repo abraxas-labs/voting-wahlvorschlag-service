@@ -25,7 +25,6 @@ public class UserService : IUserService
     private const string TenantUsersCacheKey = "TenantUsers";
     private const string UserAuthorizationsCacheKey = "UserAuthorizations";
     private const string ChildTenantUsersCacheKey = "ChildTenantUsers";
-    private const string MyAccountShortcut = "MA";
     private readonly AuthService _authService;
     private readonly CacheService _cache;
     private readonly ITenantService _tenantService;
@@ -118,7 +117,7 @@ public class UserService : IUserService
             },
             resourceOwnerTenantId);
 
-        var auths = await UpdateUserAuthorizations(user.Loginid, [], tenantIds, resourceOwnerTenantId);
+        var auths = await UpdateUserAuthorizations(user.Loginid, [], tenantIds);
 
         return new TenantUser(user, auths);
     }
@@ -169,10 +168,9 @@ public class UserService : IUserService
             _logger.LogDebug("No cache entry found for key {CacheKey}. Getting user auths from IAM.", $"{UserAuthorizationsCacheKey}.{loginId}");
 
             var eawvApp = await _applicationService.GetEawvApplication();
-            var myAccountApp = await _applicationService.GetApplication(MyAccountShortcut);
 
             var userAuthorizations = await _permissionClient.PermissionService_GetUserAuthorizationsAsync(loginId);
-            return userAuthorizations?.Authorizations?.Where(a => a.Application.Id == eawvApp.Id || a.Application.Id == myAccountApp.Id) ?? [];
+            return userAuthorizations?.Authorizations?.Where(a => a.Application.Id == eawvApp.Id) ?? [];
         });
 
         var currentTenantId = _authService.GetTenantId();
@@ -273,8 +271,7 @@ public class UserService : IUserService
     private async Task<List<Abraxaspermissionapiv1Authorization>> UpdateUserAuthorizations(
         string loginId,
         IEnumerable<Abraxaspermissionapiv1Authorization> authsToRemove,
-        ICollection<string> newTenantIds,
-        string resoureOwnerTenant = null)
+        ICollection<string> newTenantIds)
     {
         var ensureAccessTasks = newTenantIds.Select(t => _tenantService.AssertChildParent(t, _authService.GetTenantId()));
         await Task.WhenAll(ensureAccessTasks);
@@ -288,21 +285,12 @@ public class UserService : IUserService
             Value = Role.User,
         };
         var eawvApplication = await _applicationService.GetEawvApplication();
-        var myAccountApplication = await _applicationService.GetApplication(MyAccountShortcut);
 
         var addedAuths = new List<Abraxaspermissionapiv1Authorization>();
         foreach (var tenantId in newTenantIds)
         {
             var eawvAuth = await CreateAuthorization(eawvApplication, loginId, tenantId, eawvRoleLabel);
             addedAuths.Add(eawvAuth);
-
-            // Add MyAccount authorization for all tenants except the resource owner tenant
-            // who is automatically granted access to MyAccount at the time of user creation.
-            if (tenantId != resoureOwnerTenant)
-            {
-                var myAccountAuth = await CreateAuthorization(myAccountApplication, loginId, tenantId, eawvRoleLabel);
-                addedAuths.Add(myAccountAuth);
-            }
         }
 
         _cache.Invalidate<IdentityClient.V1User>(loginId);

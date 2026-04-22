@@ -126,6 +126,11 @@ public class ListController
             list.SubmitDate = existing.SubmitDate;
         }
 
+        // List union connections are managed exclusively via the ListUnionController.
+        // Always preserve them so a plain list update never clears the connections.
+        list.ListUnionId = existing.ListUnionId;
+        list.ListSubUnionId = existing.ListSubUnionId;
+
         if (existing.ResponsiblePartyTenantId != list.ResponsiblePartyTenantId)
         {
             await _tenantService.AssertChildParent(list.ResponsiblePartyTenantId, election.TenantId);

@@ -3,13 +3,17 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Eawv.Service.Authentication;
+using Eawv.Service.DataAccess.Entities;
 using Eawv.Service.Integration.Tests.MockedData;
 using Eawv.Service.Models;
+using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using Voting.Lib.Testing.Utils;
 using Xunit;
 
@@ -82,6 +86,38 @@ public class UpdateListTest : BaseRestTest
             HttpStatusCode.BadRequest);
     }
 
+    /// <summary>
+    /// Ensures that updating a list as Authority does not clear existing list union connections.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+    [Fact]
+    public async Task TestAsElectionAdminShouldPreserveListUnionConnection()
+    {
+        var listUnionId = await SeedListUnion();
+
+        await GetSuccessfulResponse<ListModel>(() => ElectionAdminClient.PutAsJsonAsync(
+            Url + ListMockData.ProporzFdpList.Id, NewValidRequest()));
+
+        var listUnionId2 = await GetListUnionId(ListMockData.ProporzFdpList.Id);
+        listUnionId2.Should().Be(listUnionId);
+    }
+
+    /// <summary>
+    /// Ensures that updating a list as Party does not clear existing list union connections.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+    [Fact]
+    public async Task TestAsUserShouldPreserveListUnionConnection()
+    {
+        var listUnionId = await SeedListUnion();
+
+        await GetSuccessfulResponse<ListModel>(() => UserClient.PutAsJsonAsync(
+            Url + ListMockData.ProporzFdpList.Id, NewValidRequest()));
+
+        var listUnionId2 = await GetListUnionId(ListMockData.ProporzFdpList.Id);
+        listUnionId2.Should().Be(listUnionId);
+    }
+
     protected override IEnumerable<string> AuthorizedRoles()
     {
         yield return Role.User;
@@ -91,6 +127,35 @@ public class UpdateListTest : BaseRestTest
     protected override Task<HttpResponseMessage> AuthorizationTestCall(HttpClient httpClient)
     {
         return httpClient.PostAsJsonAsync(Url, NewValidRequest());
+    }
+
+    private async Task<Guid> SeedListUnion()
+    {
+        var listUnionId = Guid.NewGuid();
+        await RunOnDb(async db =>
+        {
+            var union = new ListUnion
+            {
+                Id = listUnionId,
+                CreatedBy = UserMockData.TestUser.Id,
+                CreationDate = DateTime.UtcNow,
+            };
+            db.ListUnions.Add(union);
+            await db.SaveChangesAsync();
+
+            await db.Lists
+                .Where(l => l.Id == ListMockData.ProporzFdpList.Id || l.Id == ListMockData.ProporzSpList.Id)
+                .ExecuteUpdateAsync(s => s.SetProperty(l => l.ListUnionId, listUnionId));
+        });
+        return listUnionId;
+    }
+
+    private Task<Guid?> GetListUnionId(Guid listId)
+    {
+        return RunOnDb(db => db.Lists
+            .Where(l => l.Id == listId)
+            .Select(l => l.ListUnionId)
+            .SingleAsync());
     }
 
     private ModifyListModel NewValidRequest(Action<ModifyListModel> customizer = null)

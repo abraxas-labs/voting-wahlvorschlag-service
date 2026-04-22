@@ -1,4 +1,4 @@
-# ✨ Changelog (`v2.14.3`)
+# ✨ Changelog (`v2.14.5`)
 
 All notable changes to this project will be documented in this file.
 
@@ -8,11 +8,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Version Info
 
 ```text
-This version -------- v2.14.3
-Previous version ---- v2.14.1
+This version -------- v2.14.5
+Previous version ---- v2.14.3
 Initial version ----- v2.12.10
 Total commits ------- 2
 ```
+
+## [v2.14.5] - 2026-04-22
+
+### 🔄 Changed
+
+- preserve list union connections on list update
+
+## [v2.14.4] - 2026-04-15
+
+### 🔄 Changed
+
+- remove my account
 
 ## [v2.14.3] - 2026-03-25
 
