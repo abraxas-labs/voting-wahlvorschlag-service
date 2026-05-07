@@ -1,4 +1,4 @@
-# ✨ Changelog (`v2.14.6`)
+# ✨ Changelog (`v2.14.7`)
 
 All notable changes to this project will be documented in this file.
 
@@ -8,11 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Version Info
 
 ```text
-This version -------- v2.14.6
-Previous version ---- v2.14.5
+This version -------- v2.14.7
+Previous version ---- v2.14.6
 Initial version ----- v2.12.10
 Total commits ------- 1
 ```
+
+## [v2.14.7] - 2026-05-07
+
+### 🔄 Changed
+
+- check election read access when fetching ballot document
 
 ## [v2.14.6] - 2026-05-07
 

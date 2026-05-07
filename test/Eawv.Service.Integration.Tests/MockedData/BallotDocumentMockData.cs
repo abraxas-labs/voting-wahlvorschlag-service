@@ -44,6 +44,16 @@ public static class BallotDocumentMockData
         Document = [7, 8, 9],
     };
 
+    public static BallotDocument FutureUnavailableDocument => new()
+    {
+        Id = new Guid("96F0CD18-E4C2-45F2-81F8-3A4E2976F5BA"),
+        CreationDate = MockedClock.UtcNowDate,
+        CreatedBy = UserMockData.StGallenUser.Id,
+        ElectionId = ElectionMockData.FutureUnavailableElection.Id,
+        Name = "future.pdf",
+        Document = [10, 11, 12],
+    };
+
     public static IEnumerable<BallotDocument> All
     {
         get
@@ -51,6 +61,7 @@ public static class BallotDocumentMockData
             yield return ProporzDocument;
             yield return GossauDocument;
             yield return ArchivedElectionDocument;
+            yield return FutureUnavailableDocument;
         }
     }
 

@@ -51,6 +51,21 @@ public class GetBallotDocumentTest : BaseRestTest
             HttpStatusCode.NotFound);
     }
 
+    [Fact]
+    public async Task TestAsUserFutureElectionShouldNotWork()
+    {
+        await AssertStatus(
+            () => UserClient.GetAsync($"api/elections/{ElectionMockData.FutureUnavailableElection.Id}/documents/{BallotDocumentMockData.FutureUnavailableDocument.Id}"),
+            HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task TestAsElectionAdminFutureElectionShouldWork()
+    {
+        await GetSuccessfulResponse<BallotDocumentModel>(
+            () => ElectionAdminClient.GetAsync($"api/elections/{ElectionMockData.FutureUnavailableElection.Id}/documents/{BallotDocumentMockData.FutureUnavailableDocument.Id}"));
+    }
+
     protected override IEnumerable<string> AuthorizedRoles()
     {
         yield return Role.User;

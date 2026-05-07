@@ -2,6 +2,7 @@
 // For license information see LICENSE file
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Eawv.Service.Authentication;
 using Eawv.Service.DataAccess.Entities;
@@ -25,8 +26,9 @@ public class BallotDocumentRepository : BaseRepository<BallotDocument>
     public override async Task<BallotDocument> Get(Guid id)
     {
         var relevantTenantId = await _tenantService.GetParentOrCurrentTenantId();
+        var electionPredicate = AuthService.ReadElectionPermissionsPredicate(relevantTenantId);
         var entity = await Context.BallotDocuments
-            .SingleOrDefaultAsync(e => e.Id == id && e.Election.TenantId == relevantTenantId);
+            .SingleOrDefaultAsync(e => e.Id == id && Context.Elections.Where(electionPredicate).Any(el => el.Id == e.ElectionId));
         return entity ?? throw new EntityNotFoundException(id);
     }
 }
