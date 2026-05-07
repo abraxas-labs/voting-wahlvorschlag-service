@@ -88,4 +88,9 @@ public class AppConfig
     /// Gets or sets the malware scanner configuration.
     /// </summary>
     public MalwareScannerConfig MalwareScanner { get; set; } = new();
+
+    /// <summary>
+    /// Gets or sets the automapper configuration.
+    /// </summary>
+    public AutoMapperConfig AutoMapper { get; set; } = new();
 }

@@ -20,6 +20,7 @@ using Moq;
 using Moq.Protected;
 using Voting.Lib.Iam.Store;
 using Voting.Lib.Iam.TokenHandling;
+using Voting.Lib.Iam.TokenHandling.ServiceToken;
 using Voting.Lib.Testing.Mocks;
 using Xunit;
 
@@ -129,7 +130,9 @@ public class NotificationServiceUnitTest
         var auth = new Mock<IAuth>();
         var serviceTokenHandler = new Mock<ITokenHandler>();
         serviceTokenHandler.Setup(x => x.GetToken(CancellationToken.None)).ReturnsAsync(string.Empty);
-
-        return new AuthService(serviceTokenHandler.Object, auth.Object, new MockedClock());
+        var serviceTokenHandlerFactory = new Mock<IServiceTokenHandlerFactory>();
+        serviceTokenHandlerFactory.Setup(x => x.CreateHandler(It.IsAny<string>())).Returns(serviceTokenHandler.Object);
+        var appConfig = new AppConfig { SecureConnect = new() { ServiceAccount = "Test" } };
+        return new AuthService(appConfig, serviceTokenHandlerFactory.Object, auth.Object, new MockedClock());
     }
 }

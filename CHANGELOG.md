@@ -1,4 +1,4 @@
-# ✨ Changelog (`v2.14.5`)
+# ✨ Changelog (`v2.14.6`)
 
 All notable changes to this project will be documented in this file.
 
@@ -8,11 +8,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Version Info
 
 ```text
-This version -------- v2.14.5
-Previous version ---- v2.14.3
+This version -------- v2.14.6
+Previous version ---- v2.14.5
 Initial version ----- v2.12.10
-Total commits ------- 2
+Total commits ------- 1
 ```
+
+## [v2.14.6] - 2026-05-07
+
+### 🆕 Added
+
+- add license key registration for AutoMapper
+
+### 🔄 Changed
+
+- bump AutoMapper from v12.0.1 to v15.1.3
 
 ## [v2.14.5] - 2026-04-22
 

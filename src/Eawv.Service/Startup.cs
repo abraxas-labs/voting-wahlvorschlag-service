@@ -26,6 +26,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
 using Prometheus;
 using Voting.Lib.Common.DependencyInjection;
 using Voting.Lib.Database.Migrations;
+using Voting.Lib.Iam.TokenHandling.ServiceToken;
 using Voting.Lib.MalwareScanner.DependencyInjection;
 using Voting.Lib.Rest.Middleware;
 
@@ -55,12 +56,23 @@ public class Startup
                 x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
 
-        services.AddAutoMapper(typeof(Election).Assembly);
+        services.AddAutoMapper(
+            cfg => cfg.LicenseKey = _appConfig.AutoMapper.LicenseKey,
+            typeof(Election).Assembly);
+
         services.AddMemoryCache();
         services.AddHealthChecks();
         services.AddRazorPages();
 
         services.AddCors(_configuration);
+
+        services.AddSecureConnectServiceAccount(_appConfig.SecureConnect.ServiceAccount, new SecureConnectServiceAccountOptions
+        {
+            Password = _appConfig.SecureConnect.ServiceAccountPassword,
+            Authority = _appConfig.SecureConnect.Authority,
+            UserName = _appConfig.SecureConnect.ServiceAccount,
+            ClientIdScopes = _appConfig.SecureConnect.Scopes,
+        });
 
         ConfigureAppConfigServices(services);
 

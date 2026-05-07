@@ -5,11 +5,13 @@ using System;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Eawv.Service.Configuration;
 using Eawv.Service.DataAccess.Entities;
 using Eawv.Service.Exceptions;
 using Voting.Lib.Common;
 using Voting.Lib.Iam.Store;
 using Voting.Lib.Iam.TokenHandling;
+using Voting.Lib.Iam.TokenHandling.ServiceToken;
 
 namespace Eawv.Service.Authentication;
 
@@ -20,11 +22,12 @@ public class AuthService
     private readonly IClock _clock;
 
     public AuthService(
-        ITokenHandler servicetokenHandler,
+        AppConfig config,
+        IServiceTokenHandlerFactory servicetokenHandlerFactory,
         IAuth auth,
         IClock clock)
     {
-        _servicetokenHandler = servicetokenHandler;
+        _servicetokenHandler = servicetokenHandlerFactory.CreateHandler(config.SecureConnect.ServiceAccount);
         _auth = auth;
         _clock = clock;
     }
