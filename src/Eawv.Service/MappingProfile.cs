@@ -83,6 +83,8 @@ public class MappingProfile : Profile
         CreateMap<PermissionClient.Apiv1Email, IdentityClient.Apiv1Email>().ReverseMap();
         CreateMap<PermissionClient.Apiv1PhoneNumber, IdentityClient.Apiv1PhoneNumber>().ReverseMap();
         CreateMap<PermissionClient.CommonapiLabel, IdentityClient.CommonapiLabel>().ReverseMap();
+
+        CreateMap<CountryXmlModel, CountryModel>();
     }
 
     private void CreateDomainOfInfluenceElectionMaps()

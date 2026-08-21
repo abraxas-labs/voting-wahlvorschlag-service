@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Serialization;
+using Eawv.Service.Data.Countries;
 using Eawv.Service.DataAccess.Entities;
 using Eawv.Service.Ech.Ech0157.Models;
 using Eawv.Service.Ech.Providers;
@@ -24,10 +25,7 @@ public class EchService
 {
     private const string MatchOneOrMoreDigitsPattern = @"\d+";
     private const string UnknownValue = "-";
-    private const string SwissCountryIso = "CH";
-    private const string SwissCountryNameShort = "Schweiz";
     private const string MajorityElectionDefaultCandidateReference = "0";
-    private const int SwissCountryId = 8100;
     private const int DefaultListOrderOfPrecedence = 99;
 
     private static readonly Dictionary<ElectionType, TypeOfElectionType> ElectionTypeMapping =
@@ -250,23 +248,34 @@ public class EchService
     /// <returns>A mapped <see cref="AddressInformationType"/>.</returns>
     private static AddressInformationType GetCandidateDwellingAddress(Candidate candidate)
     {
-        var zipCodeIsSwiss = int.TryParse(candidate.ZipCode, out var zipCode) && zipCode is > 1000 and <= 9999;
-        var isDifferentPoliticalAddressTownSet = false;
-        var town = string.IsNullOrEmpty(candidate.Locality) ? UnknownValue : candidate.Locality;
+        var country = CountryProvider.GetCountryFromIsoId(candidate.Country);
+        var countryIso = country?.IsoId ?? CountryProvider.SwissCountryIso;
+        var isSwiss = CountryProvider.IsSwissCountry(countryIso);
+        var zipCodeIsSwiss = int.TryParse(candidate.ZipCode, out var zipCode) && zipCode is >= 1000 and <= 9999;
+        if (!zipCodeIsSwiss && isSwiss)
+        {
+            // Fallback for invalid stored data. Without this, the export would not be valid.
+            zipCode = 1000;
+        }
 
+        var town = string.IsNullOrEmpty(candidate.Locality) ? UnknownValue : candidate.Locality;
         if (!string.IsNullOrEmpty(candidate.BallotLocality) &&
             !town.Equals(candidate.BallotLocality, StringComparison.Ordinal))
         {
             town = candidate.BallotLocality;
-            isDifferentPoliticalAddressTownSet = true;
         }
 
         return new AddressInformationType
         {
-            SwissZipCode = zipCodeIsSwiss && !isDifferentPoliticalAddressTownSet ? zipCode : null,
-            ForeignZipCode = zipCodeIsSwiss || isDifferentPoliticalAddressTownSet ? null : candidate.ZipCode,
+            SwissZipCode = isSwiss ? zipCode : null,
+            ForeignZipCode = !isSwiss ? candidate.ZipCode : null,
             Town = town,
-            Country = CountryType.Create(SwissCountryId, SwissCountryIso, SwissCountryNameShort),
+            Street = candidate.Street,
+            HouseNumber = candidate.HouseNumber,
+            Country = CountryType.Create(
+                country?.Id ?? CountryProvider.SwissCountryId,
+                countryIso,
+                country?.Description ?? CountryProvider.SwissCountryNameShort),
         };
     }
 

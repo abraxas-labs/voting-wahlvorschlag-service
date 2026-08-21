@@ -220,28 +220,23 @@ public class UserService : IUserService
             var application = await _applicationService.GetEawvApplication();
             var childTenants = await _tenantService.GetParties();
 
-            var users = new List<TenantUser>();
-            foreach (var tenant in childTenants)
-            {
-                var tenantUsers = await _permissionClient.PermissionService_GetUsersByAppAndTenant2Async(tenant.Id, application.Id);
-                var activeUsers = tenantUsers?.Users?.Where(u => u.Lifecycle != PermissionClient.ApiStorageLifecycle.INACTIVE) ?? [];
+            var authorizationsTask = _permissionClient.PermissionService_GetAppAuthorizationsAsync(application.Id);
+            var usersTask = _permissionClient.PermissionService_GetUsersByAppAsync(application.Id);
 
-                foreach (var user in activeUsers)
-                {
-                    var existingUser = users.SingleOrDefault(u => u.User.Id == user.Id);
+            await Task.WhenAll(authorizationsTask, usersTask);
 
-                    if (existingUser != null)
-                    {
-                        existingUser.Tenants.Add(tenant);
-                    }
-                    else
-                    {
-                        users.Add(new TenantUser(_mapper.Map<IdentityClient.V1User>(user), tenant));
-                    }
-                }
-            }
+            var childTenantById = childTenants.ToDictionary(t => t.Id);
+            var activeAuthsByLoginId = authorizationsTask.Result.Authorizations?
+                .Where(auth => auth.Tenant != null && childTenantById.Keys.Contains(auth.Tenant.Id) && auth.Lifecycle != PermissionClient.ApiStorageLifecycle.INACTIVE)
+                .GroupBy(auth => auth.LoginId)
+                .ToDictionary(group => group.Key, group => group.Select(auth => childTenantById[auth.Tenant.Id]).ToList())
+                ?? [];
 
-            return users;
+            return usersTask.Result.Users?
+                .Where(u => activeAuthsByLoginId.ContainsKey(u.Loginid) && u.Type == "user")
+                .Select(u => new TenantUser { User = _mapper.Map<IdentityClient.V1User>(u), Tenants = activeAuthsByLoginId[u.Loginid] })
+                .ToList()
+                ?? [];
         });
     }
 

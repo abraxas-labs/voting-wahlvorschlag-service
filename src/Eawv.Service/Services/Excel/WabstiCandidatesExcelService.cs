@@ -65,7 +65,7 @@ public class WabstiCandidatesExcelService : IExcelExport
             candidate.OccupationalTitle,
             candidate.DateOfBirth,
             candidate.Incumbent ? "Ja" : "Nein",
-            "CH",
+            candidate.Country,
             string.Empty,
             string.Empty,
             string.Empty,

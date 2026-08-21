@@ -32,6 +32,7 @@ public static class CandidateMockData
         DateOfBirth = new DateTime(1956, 2, 3, 0, 0, 0, DateTimeKind.Utc),
         OrderIndex = 1,
         ZipCode = "9000",
+        Country = "CH",
         Sex = SexType.Male,
         Street = "Teststreet",
     };
@@ -54,6 +55,7 @@ public static class CandidateMockData
         DateOfBirth = new DateTime(1962, 12, 23, 0, 0, 0, DateTimeKind.Utc),
         OrderIndex = 1,
         ZipCode = "9000",
+        Country = "CH",
         Sex = SexType.Female,
         Street = "AtHome",
     };

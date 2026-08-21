@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Eawv.Service.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Eawv.Service.Migrations
 {
     [DbContext(typeof(EawvContext))]
-    partial class EawvContextModelSnapshot : ModelSnapshot
+    [Migration("20260610135440_AddCandidateCountry")]
+    partial class AddCandidateCountry
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

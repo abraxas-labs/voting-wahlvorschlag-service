@@ -103,6 +103,13 @@ public class UpdateAllCandidatesTest : BaseRestTest
     }
 
     [Fact]
+    public async Task ShouldReturnBadRequestWhenSwissZipCodeInvalid()
+    {
+        await AssertStatus(
+            () => UserClient.PutAsJsonAsync(Url, NewValidRequest(c => c[0].ZipCode = "23456")), HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
     public async Task TestDifferentTenantShouldNotWork()
     {
         await AssertStatus(
@@ -156,6 +163,7 @@ public class UpdateAllCandidatesTest : BaseRestTest
                 ZipCode = "9000",
                 Sex = SexType.Male,
                 Street = "Teststreet updated",
+                Country = "CH",
             },
             new()
             {
@@ -173,6 +181,7 @@ public class UpdateAllCandidatesTest : BaseRestTest
                 ZipCode = "9000",
                 Sex = SexType.Male,
                 Street = "Downtown",
+                Country = "CH",
             },
         };
 

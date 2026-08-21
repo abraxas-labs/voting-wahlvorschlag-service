@@ -31,6 +31,8 @@ public class CandidateModel : BaseEntityModel
 
     public string Locality { get; set; }
 
+    public string Country { get; set; }
+
     public string BallotFamilyName { get; set; }
 
     public string BallotFirstName { get; set; }

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Eawv.Service.Authentication;
+using Eawv.Service.Data.Countries;
 using Eawv.Service.DataAccess;
 using Eawv.Service.DataAccess.Entities;
 using Eawv.Service.Exceptions;
@@ -78,12 +79,21 @@ public class CandidateController
 
         for (var i = 0; i < candidates.Count; i++)
         {
-            if (candidates[i].Index == 0)
+            var candidate = candidates[i];
+            if (candidate.Index == 0)
             {
-                candidates[i].Index = i + 1;
+                candidate.Index = i + 1;
             }
 
-            candidates[i].ListId = listId;
+            candidate.ListId = listId;
+
+            if (CountryProvider.IsSwissCountry(candidate.Country)
+                && (!int.TryParse(candidate.ZipCode, out var zipCode)
+                    || zipCode < 1000
+                    || zipCode > 9999))
+            {
+                throw new InvalidSwissZipCodeException(candidate.ZipCode);
+            }
         }
 
         // For users without the Wahlverwalter role, retain existing marked elements and disallow adding new ones.

@@ -1,4 +1,4 @@
-# ✨ Changelog (`v2.14.7`)
+# ✨ Changelog (`v2.15.1`)
 
 All notable changes to this project will be documented in this file.
 
@@ -8,11 +8,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Version Info
 
 ```text
-This version -------- v2.14.7
-Previous version ---- v2.14.6
+This version -------- v2.15.1
+Previous version ---- v2.14.7
 Initial version ----- v2.12.10
-Total commits ------- 1
+Total commits ------- 6
 ```
+
+## [v2.15.1] - 2026-06-17
+
+### 🔄 Changed
+
+- correctly export dwelling address in eCH-export
+
+## [v2.15.0] - 2026-06-17
+
+### 🆕 Added
+
+- add country to candidates
+
+## [v2.14.11] - 2026-06-10
+
+### 🔄 Changed
+
+- correctly export candidate address in eCH export
+
+## [v2.14.10] - 2026-06-09
+
+### 🔄 Changed
+
+- replace per-tenant calls when fetching users from child tenants
+
+## [v2.14.9] - 2026-06-05
+
+### 🔄 Changed
+
+- update V1Application cache duration
+
+## [v2.14.8] - 2026-06-05
+
+### 🔄 Changed
+
+- parallelize user calls for child tenants from permission service
 
 ## [v2.14.7] - 2026-05-07
 

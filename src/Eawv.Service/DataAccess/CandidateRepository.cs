@@ -100,6 +100,7 @@ public class CandidateRepository : BaseRepository<Candidate>
         {
             if (existingFields.TryGetValue(markedElement.Field, out var existing))
             {
+                markedElement.Id = existing.Id;
                 markedElement.CreatedBy = existing.CreatedBy;
                 markedElement.CreationDate = existing.CreationDate;
                 SetModifiedFields(markedElement);
@@ -133,7 +134,8 @@ public class CandidateRepository : BaseRepository<Candidate>
             existing.Index == candidate.Index &&
             existing.OrderIndex == candidate.OrderIndex &&
             existing.CloneOrderIndex == candidate.CloneOrderIndex &&
-            existing.Party == candidate.Party;
+            existing.Party == candidate.Party &&
+            existing.Country == candidate.Country;
 
         if (!equal)
         {

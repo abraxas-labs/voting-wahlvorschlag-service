@@ -26,6 +26,7 @@
         "HouseNumber": null,
         "ZipCode": "9000",
         "Locality": "St. Gallen",
+        "Country": "CH",
         "BallotFamilyName": "Muster",
         "BallotFirstName": "Max",
         "BallotOccupationalTitle": "Bäcker",

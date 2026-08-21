@@ -31,4 +31,6 @@ public class SecureConnectConfiguration
     public string TenantHeaderName { get; set; }
 
     public string AppHeaderName { get; set; }
+
+    public int MaxParallelTenantRequests { get; set; } = 20;
 }

@@ -69,6 +69,11 @@ public class ModifyCandidateModel
     public string Locality { get; set; }
 
     [Required]
+    [SimpleSlText]
+    [Length(2, 2)]
+    public string Country { get; set; }
+
+    [Required]
     [ComplexSlText]
     [MaxLength(100)]
     public string BallotFamilyName { get; set; }

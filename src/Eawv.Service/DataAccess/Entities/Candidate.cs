@@ -31,6 +31,11 @@ public class Candidate : BaseEntity
 
     public string Locality { get; set; }
 
+    /// <summary>
+    /// Gets or sets the country in the ISO 2 format (e.g. CH).
+    /// </summary>
+    public string Country { get; set; }
+
     public string BallotFamilyName { get; set; }
 
     public string BallotFirstName { get; set; }
@@ -103,6 +108,8 @@ public class Candidate : BaseEntity
             entity.Property(x => x.ZipCode)
                 .IsRequired();
             entity.Property(x => x.Locality)
+                .IsRequired();
+            entity.Property(x => x.Country)
                 .IsRequired();
             entity.Property(x => x.Incumbent)
                 .IsRequired();
