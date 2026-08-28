@@ -6,6 +6,4 @@ namespace Eawv.Service.Models.NotificationServiceModels;
 public class RecipientModel
 {
     public string EmailAddress { get; set; }
-
-    public string LoginId { get; set; }
 }

@@ -11,7 +11,7 @@
     <FileVersion>0.0.0.1</FileVersion>
     <Version>0.0.0.1</Version>
 
-    <VotingLibVersion>21.1.1</VotingLibVersion>
+    <VotingLibVersion>22.4.0</VotingLibVersion>
   </PropertyGroup>
 
   <ItemGroup>

@@ -201,7 +201,6 @@ public class TenantService : ITenantService
 
         await notificationService.SendEmailAsync(new SendEmailRequestModel
         {
-            Sender = new() { DisplayName = _notificationConfig.SenderEmail },
             Recipients = [new() { EmailAddress = _notificationConfig.SupportEmail }],
             Message = new()
             {

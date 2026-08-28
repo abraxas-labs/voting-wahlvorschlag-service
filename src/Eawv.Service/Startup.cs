@@ -9,8 +9,6 @@ using Eawv.Service.Authentication;
 using Eawv.Service.Configuration;
 using Eawv.Service.DataAccess;
 using Eawv.Service.DataAccess.Entities;
-using Eawv.Service.Ech.Configuration;
-using Eawv.Service.Ech.DependencyInjection;
 using Eawv.Service.Middleware;
 using Eawv.Service.Services;
 using Eawv.Service.Services.Excel;
@@ -26,9 +24,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
 using Prometheus;
 using Voting.Lib.Common.DependencyInjection;
 using Voting.Lib.Database.Migrations;
+using Voting.Lib.Ech.Configuration;
 using Voting.Lib.Iam.TokenHandling.ServiceToken;
 using Voting.Lib.MalwareScanner.DependencyInjection;
 using Voting.Lib.Rest.Middleware;
+using Voting.Lib.UserNotifications;
 
 namespace Eawv.Service;
 
@@ -190,6 +190,7 @@ public class Startup
         services.AddSingleton(_appConfig.SecureConnect);
         services.AddSingleton(_appConfig.PDFService);
         services.AddSingleton(_appConfig.NotificationService);
+        services.AddUserNotificationsSmtpSender(_appConfig.Smtp);
     }
 
     private void ConfigureEawvServices(IServiceCollection services)
@@ -229,7 +230,6 @@ public class Startup
 
     /// <summary>
     /// Configures the eCH services.
-    /// VOTING-3320: after dotnet 6 update, reference Voting.Lib.Ech.
     /// </summary>
     /// <param name="services">The service collection.</param>
     /// <param name="config">The eCH config from <see cref="AppConfig"/>.</param>

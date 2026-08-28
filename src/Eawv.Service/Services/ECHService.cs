@@ -7,16 +7,15 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Xml.Serialization;
 using Eawv.Service.Data.Countries;
 using Eawv.Service.DataAccess.Entities;
-using Eawv.Service.Ech.Ech0157.Models;
-using Eawv.Service.Ech.Providers;
 using Eawv.Service.Models.TemplateServiceModels;
-using eCH_0010_6_0;
-using eCH_0155_4_0;
-using eCH_0157_4_0;
+using Ech0010_6_0;
+using Ech0155_4_0;
+using Ech0157_4_0;
 using Voting.Lib.Common;
+using Voting.Lib.Ech;
+using Voting.Lib.Ech.Ech0157_4_0.Models;
 using ElectionType = Eawv.Service.DataAccess.Entities.ElectionType;
 
 namespace Eawv.Service.Services;
@@ -26,28 +25,30 @@ public class EchService
     private const string MatchOneOrMoreDigitsPattern = @"\d+";
     private const string UnknownValue = "-";
     private const string MajorityElectionDefaultCandidateReference = "0";
-    private const int DefaultListOrderOfPrecedence = 99;
+    private const string DefaultListOrderOfPrecedence = "99";
 
     private static readonly Dictionary<ElectionType, TypeOfElectionType> ElectionTypeMapping =
         new()
         {
-            [ElectionType.Majorz] = TypeOfElectionType.Majorz,
-            [ElectionType.Proporz] = TypeOfElectionType.Proporz,
+            [ElectionType.Proporz] = TypeOfElectionType.Item1,
+            [ElectionType.Majorz] = TypeOfElectionType.Item2,
         };
 
-    private static readonly Dictionary<SexType, eCH_0044_4_1.SexType> SexMapping =
+    private static readonly Dictionary<SexType, Ech0044_4_1.SexType> SexMapping =
         new()
         {
-            [SexType.Male] = eCH_0044_4_1.SexType.Männlich,
-            [SexType.Female] = eCH_0044_4_1.SexType.Weiblich,
-            [SexType.Undefined] = eCH_0044_4_1.SexType.Unbestimmt,
+            [SexType.Male] = Ech0044_4_1.SexType.Item1,
+            [SexType.Female] = Ech0044_4_1.SexType.Item2,
+            [SexType.Undefined] = Ech0044_4_1.SexType.Item3,
         };
 
     private readonly DeliveryHeaderProvider _deliveryHeaderProvider;
+    private readonly EchSerializer _echSerializer;
 
-    public EchService(DeliveryHeaderProvider deliveryHeaderProvider)
+    public EchService(DeliveryHeaderProvider deliveryHeaderProvider, EchSerializer echSerializer)
     {
         _deliveryHeaderProvider = deliveryHeaderProvider;
+        _echSerializer = echSerializer;
     }
 
     public void WriteXml(TemplateType type, TemplateBag bag, Stream stream)
@@ -57,24 +58,38 @@ public class EchService
             throw new ArgumentException($"Cannot render {type} in xml", nameof(type));
         }
 
-        var electionInfo = GetElection(bag);
-        var electionInfos = new[] { electionInfo };
+        var electionInfo = GetElection(bag, _echSerializer);
+        var groupBallot = new EventInitialDeliveryElectionGroupBallot
+        {
+            DomainOfInfluenceIdentification = bag.Election.DomainsOfInfluence.First().DomainOfInfluence.OfficialId,
+            ElectionInformation = { electionInfo },
+        };
 
-        var groupBallot = ElectionGroupBallotType.Create(bag.Election.DomainsOfInfluence.First().DomainOfInfluence.OfficialId, electionInfos);
-        var groupBallots = new[] { groupBallot };
+        var contest = new ContestType
+        {
+            ContestIdentification = bag.Election.Id.ToString(),
+            ContestDate = bag.Election.ContestDate,
+            ContestDescription = null,
+        };
+        var eventInitialDelivery = new EventInitialDelivery
+        {
+            Contest = contest,
+            ElectionGroupBallot = { groupBallot },
+        };
+        var delivery = new Delivery
+        {
+            DeliveryHeader = _deliveryHeaderProvider.BuildHeader(),
+            InitialDelivery = eventInitialDelivery,
+        };
 
-        var contest = ContestType.Create(bag.Election.Id.ToString(), bag.Election.ContestDate);
-        var eventInitialDelivery = EventInitialDeliveryType.Create(contest, groupBallots);
-        var delivery = DeliveryType.Create(_deliveryHeaderProvider.BuildHeader(), eventInitialDelivery);
-
-        ToXml(delivery, stream);
+        _echSerializer.WriteXml(stream, delivery);
     }
 
     private static MrMrsType ToEchMrMrsType(SexType sex)
     {
         return sex == SexType.Male
-            ? MrMrsType.Herr
-            : MrMrsType.Frau;
+            ? MrMrsType.Item2
+            : MrMrsType.Item1;
     }
 
     /// <summary>
@@ -82,21 +97,22 @@ public class EchService
     /// Note: optional partyNameLong is not required from business perspective and therefore not set.
     /// </summary>
     /// <param name="partyNameShort">The party name short free text string (max. 12 characters).</param>
-    /// <returns>The <see cref="PartyAffiliationInformation"/> eCH element or null if party name short is null or whitespace.</returns>
-    private static PartyAffiliationInformation GetPartyAffiliation(string partyNameShort)
+    /// <returns>The list of <see cref="PartyAffiliationformationTypePartyAffiliationInfo"/> eCH element or null if party name short is null or whitespace.</returns>
+    private static List<PartyAffiliationformationTypePartyAffiliationInfo> GetPartyAffiliation(string partyNameShort)
     {
         if (string.IsNullOrWhiteSpace(partyNameShort))
         {
             return null;
         }
 
-        var partyAffiliationInfo =
-            new List<PartyAffiliationInfo>
+        return
+        [
+            new PartyAffiliationformationTypePartyAffiliationInfo
             {
-                    PartyAffiliationInfo.Create(Languages.German, partyNameShort),
-            };
-
-        return PartyAffiliationInformation.Create(partyAffiliationInfo);
+                Language = Languages.German,
+                PartyAffiliationShort = partyNameShort,
+            }
+        ];
     }
 
     /// <summary>
@@ -104,7 +120,7 @@ public class EchService
     /// </summary>
     /// <param name="list">The list.</param>
     /// <returns>The value for listOrderOfPrecedence.</returns>
-    private static int? GetListOrderOfPrecedence(List list)
+    private static string GetListOrderOfPrecedence(List list)
     {
         var listIndenture = GetListIndentureNumber(list);
 
@@ -122,12 +138,7 @@ public class EchService
 
         var listIndentureDigits = string.Concat(listIndentureDigitsMatches.Select(m => m.Value));
 
-        if (int.TryParse(listIndentureDigits, out var listOrderOfPrecedence))
-        {
-            return listOrderOfPrecedence;
-        }
-
-        return DefaultListOrderOfPrecedence;
+        return int.TryParse(listIndentureDigits, out _) ? listIndentureDigits : DefaultListOrderOfPrecedence;
     }
 
     /// <summary>
@@ -155,29 +166,41 @@ public class EchService
         return string.Join(", ", list.Name, list.Description);
     }
 
-    private static ElectionInformationType GetElection(TemplateBag bag)
+    private static EventInitialDeliveryElectionGroupBallotElectionInformation GetElection(TemplateBag bag, EchSerializer echSerializer)
     {
-        var desc = ElectionDescriptionInfoType.Create(Languages.German, bag.Election.Name);
-        var election = new eCH_0155_4_0.ElectionType
+        var desc = new ElectionDescriptionInformationTypeElectionDescriptionInfo
         {
-            ElectionPosition = 1,
+            Language = Languages.German,
+            ElectionDescription = bag.Election.Name,
+        };
+        var election = new Ech0155_4_0.ElectionType
+        {
+            ElectionPosition = "1",
             ElectionIdentification = bag.Election.Id.ToString(),
             TypeOfElection = ElectionTypeMapping[bag.Election.ElectionType],
-            NumberOfMandates = bag.ElectionNumberOfMandates,
-            ElectionDescription = ElectionDescriptionInformationType.Create([desc]),
+            NumberOfMandates = bag.ElectionNumberOfMandates.ToString(),
+            ElectionDescription = { desc },
         };
 
-        var candidates = GetCandidates(bag).ToArray();
-        var lists = GetLists(bag).ToArray();
-        var listUnions = GetListUnions(bag).ToArray();
+        var candidates = GetCandidates(bag).ToList();
+        var lists = GetLists(bag).ToList();
+        var listUnions = GetListUnions(bag).ToList();
         var electionInformationExtension = GetElectionInformationExtension(bag);
         ExtensionType electionInformationExtensionType = null;
-        if (electionInformationExtension.Candidates.Count > 0)
+        if (electionInformationExtension.Candidates?.Count > 0)
         {
-            electionInformationExtensionType = new ExtensionType() { Extension = electionInformationExtension };
+            electionInformationExtensionType = new ExtensionType();
+            electionInformationExtensionType.Any.Add(echSerializer.Serialize(electionInformationExtension));
         }
 
-        return ElectionInformationType.Create(election, candidates, lists, listUnions, electionInformationExtensionType);
+        return new EventInitialDeliveryElectionGroupBallotElectionInformation
+        {
+            Election = election,
+            Candidate = candidates,
+            List = lists,
+            ListUnion = listUnions,
+            Extension = electionInformationExtensionType,
+        };
     }
 
     private static ElectionInformationExtension GetElectionInformationExtension(TemplateBag bag)
@@ -207,33 +230,39 @@ public class EchService
                     ? MajorityElectionDefaultCandidateReference
                     : candidate.Index.ToString(CultureInfo.InvariantCulture);
 
-            var occupationInfo = new List<OccupationalTitleInfo>
+            var occupationInfo = new List<OccupationalTitleInformationTypeOccupationalTitleInfo>
             {
-                OccupationalTitleInfo.Create(Languages.German, candidate.OccupationalTitle),
+                new()
+                {
+                    Language = Languages.German,
+                    OccupationalTitle = candidate.OccupationalTitle,
+                },
             };
 
-            yield return CandidateType.Create(
-                null,
-                candidate.Id.ToString(),
-                string.IsNullOrEmpty(candidate.BallotFamilyName) ? candidate.FamilyName : candidate.BallotFamilyName,
-                candidate.FirstName,
-                string.IsNullOrEmpty(candidate.BallotFirstName) ? candidate.FirstName : candidate.BallotFirstName,
-                candidate.Title,
-                candidateReference,
-                null,
-                null,
-                candidate.DateOfBirth,
-                SexMapping[candidate.Sex],
-                OccupationalTitleInformation.Create(occupationInfo),
-                null,
-                null,
-                GetCandidateDwellingAddress(candidate),
-                Swiss.Create(string.IsNullOrEmpty(candidate.Origin) ? UnknownValue : candidate.Origin),
-                ToEchMrMrsType(candidate.Sex),
-                Languages.German,
-                candidate.Incumbent,
-                null,
-                GetPartyAffiliation(candidate.Party));
+            yield return new CandidateType
+            {
+                CandidateIdentification = candidate.Id.ToString(),
+                FamilyName = string.IsNullOrEmpty(candidate.BallotFamilyName)
+                    ? candidate.FamilyName
+                    : candidate.BallotFamilyName,
+                FirstName = candidate.FirstName,
+                CallName = string.IsNullOrEmpty(candidate.BallotFirstName)
+                    ? candidate.FirstName
+                    : candidate.BallotFirstName,
+                Title = candidate.Title,
+                CandidateReference = candidateReference,
+                CandidateText = null,
+                DateOfBirth = candidate.DateOfBirth,
+                Sex = SexMapping[candidate.Sex],
+                OccupationalTitle = occupationInfo,
+                DwellingAddress = GetCandidateDwellingAddress(candidate),
+                Swiss = { string.IsNullOrEmpty(candidate.Origin) ? UnknownValue : candidate.Origin },
+                MrMrs = ToEchMrMrsType(candidate.Sex),
+                LanguageOfCorrespondence = Languages.German,
+                IncumbentYesNo = candidate.Incumbent,
+                Role = null,
+                PartyAffiliation = GetPartyAffiliation(candidate.Party),
+            };
         }
     }
 
@@ -267,15 +296,17 @@ public class EchService
 
         return new AddressInformationType
         {
-            SwissZipCode = isSwiss ? zipCode : null,
+            SwissZipCode = isSwiss ? (uint?)zipCode : null,
             ForeignZipCode = !isSwiss ? candidate.ZipCode : null,
             Town = town,
             Street = candidate.Street,
-            HouseNumber = candidate.HouseNumber,
-            Country = CountryType.Create(
-                country?.Id ?? CountryProvider.SwissCountryId,
-                countryIso,
-                country?.Description ?? CountryProvider.SwissCountryNameShort),
+            HouseNumber = string.IsNullOrEmpty(candidate.HouseNumber) ? null : candidate.HouseNumber,
+            Country = new CountryType
+            {
+                CountryId = (ushort?)(country?.Id ?? CountryProvider.SwissCountryId),
+                CountryIdIso2 = countryIso,
+                CountryNameShort = country?.Description ?? CountryProvider.SwissCountryNameShort,
+            },
         };
     }
 
@@ -284,19 +315,33 @@ public class EchService
         foreach (var list in bag.Election.Lists)
         {
             var listDescription = GetListDescription(list);
-            var listDescriptions = new List<ListDescriptionInfo>
+            var listDescriptions = new List<ListDescriptionInformationTypeListDescriptionInfo>
             {
-                ListDescriptionInfo.Create(Languages.German, listDescription, Truncate(listDescription, 20)),
+                new()
+                {
+                    Language = Languages.German,
+                    ListDescription = listDescription,
+                    ListDescriptionShort = Truncate(listDescription, 20),
+                },
             };
 
-            var candidatePositions = new List<CandidatePositionInformation>();
+            var candidatePositions = new List<CandidatePositionInformationType>();
 
-            int i = 0;
+            var i = 0;
             foreach (var candidate in bag.GetClonedAndOrderedCandidates(list))
             {
-                var candidateTextInfo = CandidateTextInfo.Create(Languages.German, $"{candidate.BallotFamilyName} {candidate.BallotFirstName}");
-                var candidateTextInfos = CandidateTextInformation.Create([candidateTextInfo]);
-                var candidatePosition = CandidatePositionInformation.Create(++i, candidate.Index.ToString("D2", CultureInfo.InvariantCulture), candidate.Id.ToString(), candidateTextInfos);
+                var candidateTextInfo = new CandidateTextInformationTypeCandidateTextInfo()
+                {
+                    Language = Languages.German,
+                    CandidateText = $"{candidate.BallotFamilyName} {candidate.BallotFirstName}",
+                };
+                var candidatePosition = new CandidatePositionInformationType
+                {
+                    PositionOnList = $"{++i}",
+                    CandidateReferenceOnPosition = candidate.Index.ToString("D2", CultureInfo.InvariantCulture),
+                    CandidateIdentification = candidate.Id.ToString(),
+                    CandidateTextOnPosition = { candidateTextInfo },
+                };
                 candidatePositions.Add(candidatePosition);
             }
 
@@ -304,16 +349,17 @@ public class EchService
             {
                 ListIdentification = list.Id.ToString(),
                 ListIndentureNumber = GetListIndentureNumber(list),
-                ListDescription = ListDescriptionInformation.Create(listDescriptions),
+                ListDescription = listDescriptions,
                 IsEmptyList = list.Candidates.Count == 0,
                 ListOrderOfPrecedence = GetListOrderOfPrecedence(list),
-                TotalPositionsOnList = candidatePositions.Count,
+                TotalPositionsOnList = candidatePositions.Count.ToString(),
                 CandidatePosition = candidatePositions,
+                ListUnionBallotText = null,
             };
         }
     }
 
-    private static IEnumerable<ListUnionTypeType> GetListUnions(TemplateBag bag)
+    private static IEnumerable<ListUnionType> GetListUnions(TemplateBag bag)
     {
         var listUnions = bag.Election.Lists
             .Select(x => x.ListUnion)
@@ -325,18 +371,21 @@ public class EchService
         foreach (var listUnion in listUnions)
         {
             var lists = listUnion.Lists.Select(l => l.Id.ToString()).ToList();
-            var desc = ListUnionDescriptionInfoType.Create(Languages.German, listUnion.Id.ToString());
-            var description = ListUnionDescriptionType.Create([desc]);
-            var type = listUnion.IsSubUnion ? ListRelationType.SubListUnion : ListRelationType.ListUnion;
-            yield return ListUnionTypeType.Create(listUnion.Id.ToString(), description, type, lists);
+            var desc = new ListUnionDescriptionTypeListUnionDescriptionInfo
+            {
+                Language = Languages.German,
+                ListUnionDescription = listUnion.Id.ToString(),
+            };
+            var type = listUnion.IsSubUnion ? ListRelationType.Item2 : ListRelationType.Item1;
+            yield return new ListUnionType
+            {
+                ListUnionIdentification = listUnion.Id.ToString(),
+                ListUnionDescription = { desc },
+                ListUnionTypeProperty = type,
+                ReferencedList = lists,
+                ReferencedListUnion = listUnion.RootList?.ListUnionId?.ToString(),
+            };
         }
-    }
-
-    private static void ToXml(object o, Stream stream)
-    {
-        var serializer = new XmlSerializer(o.GetType(), [typeof(ElectionInformationExtension)]);
-        using var writer = new StreamWriter(stream);
-        serializer.Serialize(writer, o);
     }
 
     private static string Truncate(string s, int maxLength)

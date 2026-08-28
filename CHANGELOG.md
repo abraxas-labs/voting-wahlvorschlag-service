@@ -1,4 +1,4 @@
-# ✨ Changelog (`v2.15.1`)
+# ✨ Changelog (`v2.15.4`)
 
 All notable changes to this project will be documented in this file.
 
@@ -8,11 +8,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Version Info
 
 ```text
-This version -------- v2.15.1
-Previous version ---- v2.14.7
+This version -------- v2.15.4
+Previous version ---- v2.15.1
 Initial version ----- v2.12.10
-Total commits ------- 6
+Total commits ------- 3
 ```
+
+## [v2.15.4] - 2026-08-17
+
+### 🔄 Changed
+
+- migrate from secure connect notify service to standard voting email notification service
+
+### ❌ Removed
+
+- secure connect notify service integration
+
+## [v2.15.3] - 2026-08-13
+
+### 🔄 Changed
+
+- use eCH-0157 from Voting.Lib
+
+## [v2.15.2] - 2026-07-03
+
+### 🔄 Changed
+
+- extend e-mail recipient logging in notification service
 
 ## [v2.15.1] - 2026-06-17
 

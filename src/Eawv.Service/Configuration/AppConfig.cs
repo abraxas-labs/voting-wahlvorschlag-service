@@ -2,10 +2,11 @@
 // For license information see LICENSE file
 
 using System.Collections.Generic;
-using Eawv.Service.Ech.Configuration;
+using Voting.Lib.Ech.Configuration;
 using Voting.Lib.Iam.Configuration;
 using Voting.Lib.Iam.Services;
 using Voting.Lib.MalwareScanner.Configuration;
+using Voting.Lib.UserNotifications;
 
 namespace Eawv.Service.Configuration;
 
@@ -58,6 +59,11 @@ public class AppConfig
     /// Gets or Sets the razor light settings from the appsettings.
     /// </summary>
     public RazorLightConfiguration RazorLight { get; set; }
+
+    /// <summary>
+    /// Gets or sets the SMTP settings used to send notification emails.
+    /// </summary>
+    public SmtpConfig Smtp { get; set; } = new();
 
     /// <summary>
     /// Gets or Sets the secure connect settings from the appsettings.

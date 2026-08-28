@@ -57,11 +57,9 @@
     "Id": "573cfaef-363f-44b5-b116-c17d23c193eb"
   },
   "notification": {
-    "Recipients": null,
-    "Bcc": [
+    "Recipients": [
       {
-        "EmailAddress": null,
-        "LoginId": "fdp-user"
+        "EmailAddress": "fdp@user.invalid"
       }
     ],
     "Message": {
@@ -71,7 +69,6 @@
       "Content": {
         "Raw": "<h2>Guten Tag</h2>\nDer Status des Wahlvorschlags List FDP wurde geändert.<br />\nFür weitere Informationen besuchen Sie bitte VOTING Wahlvorschlag: http://localhost:4221/sg/elections/e8d78202-fbd8-447f-a045-cf6a7402875b.<br />\n<br />\nDiese Nachricht wurde automatisch generiert.\n"
       }
-    },
-    "Sender": null
+    }
   }
 }

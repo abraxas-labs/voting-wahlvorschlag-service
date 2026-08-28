@@ -21,13 +21,13 @@ public class NotificationServiceMock : INotificationService
 
     public static List<SendEmailRequestModel> SentEmails { get; } = [];
 
-    public async Task SendEmailAsync(List<string> recipientLoginIds, TemplateType type, TemplateBag bag)
+    public async Task SendEmailAsync(List<string> recipientEmails, TemplateType type, TemplateBag bag)
     {
         var renderResult = await _templateService.RenderToHtml(type, bag, true);
         var content = await renderResult.ReadAsString();
         await SendEmailAsync(new SendEmailRequestModel
         {
-            Bcc = recipientLoginIds.Distinct().Select(id => new RecipientModel { LoginId = id }).ToList(),
+            Recipients = recipientEmails.Distinct().Select(email => new RecipientModel { EmailAddress = email }).ToList(),
             Message = new MessageModel
             {
                 Subject = new MessageContentModel

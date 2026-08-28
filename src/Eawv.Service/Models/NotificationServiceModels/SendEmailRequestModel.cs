@@ -9,9 +9,5 @@ public class SendEmailRequestModel
 {
     public List<RecipientModel> Recipients { get; set; }
 
-    public List<RecipientModel> Bcc { get; set; }
-
     public MessageModel Message { get; set; }
-
-    public EmailSenderModel Sender { get; set; }
 }

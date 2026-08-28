@@ -92,12 +92,12 @@ public class EventNotificationService
             }
         }
 
-        if (users.Count == 0)
+        if (emails.Count == 0)
         {
             return;
         }
 
-        await _notificationService.SendEmailAsync(users, type, new TemplateBag
+        await _notificationService.SendEmailAsync(emails.ToList(), type, new TemplateBag
         {
             List = list,
             Election = election,
