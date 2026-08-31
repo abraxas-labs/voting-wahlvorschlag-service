@@ -1,4 +1,4 @@
-# ✨ Changelog (`v2.15.4`)
+# ✨ Changelog (`v2.15.5`)
 
 All notable changes to this project will be documented in this file.
 
@@ -8,11 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Version Info
 
 ```text
-This version -------- v2.15.4
-Previous version ---- v2.15.1
+This version -------- v2.15.5
+Previous version ---- v2.15.4
 Initial version ----- v2.12.10
-Total commits ------- 3
+Total commits ------- 1
 ```
+
+## [v2.15.5] - 2026-08-28
+
+### ⚠️ Deprecated
+
+- remove deprecated notify oauth 2.0 scope
 
 ## [v2.15.4] - 2026-08-17
 
