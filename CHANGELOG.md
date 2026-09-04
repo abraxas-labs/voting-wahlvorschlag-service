@@ -1,4 +1,4 @@
-# ✨ Changelog (`v2.15.5`)
+# ✨ Changelog (`v2.15.6`)
 
 All notable changes to this project will be documented in this file.
 
@@ -8,11 +8,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Version Info
 
 ```text
-This version -------- v2.15.5
-Previous version ---- v2.15.4
+This version -------- v2.15.6
+Previous version ---- v2.15.5
 Initial version ----- v2.12.10
 Total commits ------- 1
 ```
+
+## [v2.15.6] - 2026-09-04
+
+### :arrows_counterclockwise: Changed
+
+- Allow `Index` (candidate number) to be persisted on candidate updates so candidate numbers are now correctly saved after drag-and-drop reordering and after reload, the updated candidate positions and numbers are retained instead of reverting to original values (VE-1975)
+
+### :x: Removed
+
+- Removed `Index` property from `IgnoredModifyProperties` in CandidateRepository
 
 ## [v2.15.5] - 2026-08-28
 

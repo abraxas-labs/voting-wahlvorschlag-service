@@ -19,7 +19,6 @@ public class CandidateRepository : BaseRepository<Candidate>
     public CandidateRepository(EawvContext context, AuthService auth, IClock clock)
         : base(context, auth, clock)
     {
-        IgnoredModifyProperties.Add(c => c.Index);
     }
 
     public async Task<IEnumerable<Candidate>> GetCandidatesForList(Guid listId)
